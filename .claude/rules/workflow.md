@@ -38,14 +38,14 @@ cp ~/stock-skills/.claude/skills/stock-portfolio/data/portfolio.csv \
 ## 3. 実装フェーズ
 
 - Worktree 上でコード変更を行う
-- PostToolUse hook により `.py` ファイル編集時は自動で `pytest tests/ -q` が実行される
+- PostToolUse hook により `.py` ファイル編集時は自動で `uv run python -m pytest tests/ -q` が実行される
 - 全テスト PASS を維持しながら実装を進める
 
 ## 4. 単体テスト
 
 - 新規モジュールには対応するテストファイルを作成する
-- `python3 -m pytest tests/ -q` で全件 PASS を確認する
-- Worktree 上で実行: `cd ~/stock-skills-kik{NNN} && python3 -m pytest tests/ -q`
+- `uv run python -m pytest tests/ -q` で全件 PASS を確認する
+- Worktree 上で実行: `cd ~/stock-skills-kik{NNN} && uv run python -m pytest tests/ -q`
 
 ## 5. コードレビュー（Teams）
 
@@ -110,11 +110,11 @@ Worktree上で実行するため、パスを明示する:
 
 ```bash
 cd ~/stock-skills-kik{NNN}
-python3 .claude/skills/screen-stocks/scripts/run_screen.py --region japan --preset value --top 5
-python3 .claude/skills/stock-report/scripts/generate_report.py 7203.T
-python3 .claude/skills/watchlist/scripts/manage_watchlist.py list
-python3 .claude/skills/stock-portfolio/scripts/run_portfolio.py snapshot
-python3 .claude/skills/stress-test/scripts/run_stress_test.py --portfolio 7203.T,AAPL
+uv run python .claude/skills/screen-stocks/scripts/run_screen.py --region japan --preset value --top 5
+uv run python .claude/skills/stock-report/scripts/generate_report.py 7203.T
+uv run python .claude/skills/watchlist/scripts/manage_watchlist.py list
+uv run python .claude/skills/stock-portfolio/scripts/run_portfolio.py snapshot
+uv run python .claude/skills/stress-test/scripts/run_stress_test.py --portfolio 7203.T,AAPL
 ```
 
 ### 影響範囲に応じたテスター選定

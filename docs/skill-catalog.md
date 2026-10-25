@@ -12,7 +12,7 @@
 | graph-query | 知識グラフへの自然言語クエリ。過去のレポート・スクリーニング・取引・リサーチ・市況を検索。 |
 | investment-note | 投資メモの管理。投資テーゼ・懸念・学びなどをノートとして記録・参照・削除。 |
 | market-research | 銘柄・業界・マーケット・ビジネスモデルの深掘りリサーチ。Grok API (X/Web検索) と yfinance を統合して多角的な分析レポートを生成する。 |
-| plan-execute | プランモード — ワークフロー設計後にスキルを実行する。「プランモードで」と言われたときに起動。 |
+| plan-execute | プランモード — Orchestrator がワークフロー設計・実行・自律ループ・レビューを統括する。「プランモードで」と言われたときに起動。 |
 | screen-stocks | 割安株スクリーニング。EquityQuery で銘柄リスト不要のスクリーニング。PER/PBR/配当利回り/ROE等で日本株・米国株・ASEAN株・香港株... |
 | stock-portfolio | ポートフォリオ管理。保有銘柄の一覧表示・売買記録・構造分析。ストレステストの入力データ基盤。 |
 | stock-report | 個別銘柄・ETFの詳細レポート。ティッカーシンボルを指定して財務分析レポートを生成する。個別株はバリュエーション・割安度判定・株主還元率を表示。ETFは経... |
@@ -38,12 +38,12 @@
 
 **Examples**:
 ```bash
-python3 run_screen.py --region japan --preset alpha --top 10
-python3 run_screen.py --region us --preset trending --theme "AI" --top 10
-python3 run_screen.py --region japan --preset growth --top 10
-python3 run_screen.py --region japan --preset long-term --top 10
-python3 run_screen.py --region japan --preset momentum --top 10
-python3 run_screen.py --region japan --preset contrarian --top 10
+uv run python run_screen.py --region japan --preset alpha --top 10
+uv run python run_screen.py --region us --preset trending --theme "AI" --top 10
+uv run python run_screen.py --region japan --preset growth --top 10
+uv run python run_screen.py --region japan --preset long-term --top 10
+uv run python run_screen.py --region japan --preset momentum --top 10
+uv run python run_screen.py --region japan --preset contrarian --top 10
 ```
 
 **Output**: Markdown テーブル (銘柄/名前/スコア/PER/PBR/配当利回り/ROE)。contrarian プリセット (KIK-504) は3軸スコア（テクニカル/バリュエーション/ファンダ乖離）付き、momentum プリセット (KIK-506) はモメンタム4軸スコア（RSI/MACD/ROC/出来高）付き。直近売却済み銘柄は自動除外(KIK-418)、懸念/学びメモがある銘柄にはマーカー表示(KIK-419)。
@@ -68,8 +68,8 @@ python3 run_screen.py --region japan --preset contrarian --top 10
 
 **Examples**:
 ```bash
-python3 generate_report.py 7203.T
-python3 generate_report.py AAPL
+uv run python generate_report.py 7203.T
+uv run python generate_report.py AAPL
 ```
 
 **Output**: Markdown レポート (基本情報/バリュエーション/割安度判定/逆張りシグナル/株主還元率/3年還元推移/バリュートラップ判定)
@@ -92,10 +92,10 @@ Grok API (X検索/Web検索) と yfinance を統合した深掘りリサーチ�
 
 **Examples**:
 ```bash
-python3 run_research.py stock 7203.T
-python3 run_research.py industry 半導体
-python3 run_research.py market 日経平均
-python3 run_research.py business 7751.T
+uv run python run_research.py stock 7203.T
+uv run python run_research.py industry 半導体
+uv run python run_research.py market 日経平均
+uv run python run_research.py business 7751.T
 ```
 
 **Output**: Markdown レポート (概要/ニュース/Xトレンド/分析)
@@ -119,9 +119,9 @@ python3 run_research.py business 7751.T
 
 **Examples**:
 ```bash
-python3 manage_watchlist.py list
-python3 manage_watchlist.py add --name "注目" --symbols "7203.T,AAPL"
-python3 manage_watchlist.py remove --name "注目" --symbols "7203.T"
+uv run python manage_watchlist.py list
+uv run python manage_watchlist.py add --name "注目" --symbols "7203.T,AAPL"
+uv run python manage_watchlist.py remove --name "注目" --symbols "7203.T"
 ```
 
 **Output**: Markdown リスト
@@ -142,8 +142,8 @@ python3 manage_watchlist.py remove --name "注目" --symbols "7203.T"
 
 **Examples**:
 ```bash
-python3 run_stress_test.py --portfolio 7203.T,AAPL,D05.SI
-python3 run_stress_test.py --scenario テック暴落
+uv run python run_stress_test.py --portfolio 7203.T,AAPL,D05.SI
+uv run python run_stress_test.py --scenario テック暴落
 ```
 
 **Output**: Markdown レポート (相関行列/ショック感応度/シナリオ分析/因果連鎖/推奨アクション)。実行結果は `data/history/stress_test/` に自動保存 (KIK-428)。
@@ -181,15 +181,15 @@ python3 run_stress_test.py --scenario テック暴落
 
 **Examples**:
 ```bash
-python3 run_portfolio.py snapshot
-python3 run_portfolio.py buy --symbol 7203.T --shares 100 --price 2850 --currency JPY
-python3 run_portfolio.py sell --symbol AAPL --shares 5
-python3 run_portfolio.py health
-python3 run_portfolio.py simulate --years 5 --monthly-add 50000 --target 15000000
-python3 run_portfolio.py what-if --add "7203.T:100:2850,AAPL:10:250"
-python3 run_portfolio.py backtest --preset alpha --region jp --days 90
-python3 run_portfolio.py adjust
-python3 run_portfolio.py adjust --full
+uv run python run_portfolio.py snapshot
+uv run python run_portfolio.py buy --symbol 7203.T --shares 100 --price 2850 --currency JPY
+uv run python run_portfolio.py sell --symbol AAPL --shares 5
+uv run python run_portfolio.py health
+uv run python run_portfolio.py simulate --years 5 --monthly-add 50000 --target 15000000
+uv run python run_portfolio.py what-if --add "7203.T:100:2850,AAPL:10:250"
+uv run python run_portfolio.py backtest --preset alpha --region jp --days 90
+uv run python run_portfolio.py adjust
+uv run python run_portfolio.py adjust --full
 ```
 
 **Auto-Save** (KIK-428): forecast サブコマンド実行完了時に `data/history/forecast/{date}_forecast.json` へ自動保存。Neo4j にも Forecast ノード + FORECASTED リレーションを dual-write。
@@ -213,10 +213,10 @@ python3 run_portfolio.py adjust --full
 
 **Examples**:
 ```bash
-python3 manage_note.py save --symbol 7203.T --type thesis --content "EV普及で部品需要増"
-python3 manage_note.py list --symbol 7203.T
-python3 manage_note.py list --type lesson
-python3 manage_note.py delete --id abc123
+uv run python manage_note.py save --symbol 7203.T --type thesis --content "EV普及で部品需要増"
+uv run python manage_note.py list --symbol 7203.T
+uv run python manage_note.py list --type lesson
+uv run python manage_note.py delete --id abc123
 ```
 
 **Output**: Markdown テーブル (日付/銘柄/タイプ/内容)
@@ -248,10 +248,10 @@ python3 manage_note.py delete --id abc123
 
 **Examples**:
 ```bash
-python3 run_query.py "7203.Tの前回レポートは？"
-python3 run_query.py "繰り返し候補に上がってる銘柄は？"
-python3 run_query.py "AAPLの取引履歴"
-python3 run_query.py "最近の市況は？"
+uv run python run_query.py "7203.Tの前回レポートは？"
+uv run python run_query.py "繰り返し候補に上がってる銘柄は？"
+uv run python run_query.py "AAPLの取引履歴"
+uv run python run_query.py "最近の市況は？"
 ```
 
 **Output**: Markdown テーブル (クエリタイプに応じたフォーマット)

@@ -2,7 +2,7 @@
 """Backfill missing embeddings for Neo4j nodes (KIK-492).
 
 Usage:
-    python3 scripts/backfill_embeddings.py [--dry-run]
+    uv run python scripts/backfill_embeddings.py [--dry-run]
 
 Finds nodes where embedding IS NULL, rebuilds semantic_summary if needed,
 and generates embedding via TEI.

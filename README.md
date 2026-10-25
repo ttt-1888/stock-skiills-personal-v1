@@ -5,10 +5,10 @@
 ## セットアップ
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
-Python 3.10+ が必要。依存: yfinance, pyyaml, numpy, pytest
+Python 3.10+ と uv が必要です。依存関係は `pyproject.toml` で管理し、`uv.lock` で固定します。
 
 ### 環境変数
 
@@ -174,7 +174,7 @@ Core (src/core/)
 docker compose up -d
 
 # スキーマ初期化 + 既存データインポート
-python3 scripts/init_graph.py --rebuild
+uv run python scripts/init_graph.py --rebuild
 ```
 
 Neo4j 未接続でも全スキルが正常動作する（graceful degradation）。
@@ -182,8 +182,8 @@ Neo4j 未接続でも全スキルが正常動作する（graceful degradation）
 ## テスト
 
 ```bash
-pytest tests/           # 全1573テスト (< 6秒)
-pytest tests/core/ -v   # コアモジュール
+uv run python -m pytest tests/ -q       # 全テスト
+uv run python -m pytest tests/core/ -v  # コアモジュール
 ```
 
 ## 免責事項

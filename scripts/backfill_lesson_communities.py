@@ -2,7 +2,7 @@
 """Backfill LessonCommunity for existing lesson notes (KIK-571).
 
 Usage:
-    python3 scripts/backfill_lesson_communities.py [--dry-run]
+    uv run python scripts/backfill_lesson_communities.py [--dry-run]
 """
 
 import argparse

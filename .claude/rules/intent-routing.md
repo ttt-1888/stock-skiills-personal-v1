@@ -128,10 +128,10 @@
 
 **KIK-567 関連（市況チェック — 定量+定性）**:
 - 「市況チェック」「相場の温度感」「VIXは？」「F&Gは？」「金利の推移」「イールドカーブ」 → 2つ同時実行:
-  1. `python3 scripts/market_dashboard.py`（定量: VIX/F&G/金利/イールドカーブ）
+  1. `uv run python scripts/market_dashboard.py`（定量: VIX/F&G/金利/イールドカーブ）
   2. `/market-research market`（定性: Grokでニュース・センチメント）
   → Claude が両方の出力を統合して回答
-- 「VIXだけ見せて」「金利の推移」 → `python3 scripts/market_dashboard.py` のみ（定量だけ）
+- 「VIXだけ見せて」「金利の推移」 → `uv run python scripts/market_dashboard.py` のみ（定量だけ）
 - 「市況ニュース」「最新の相場観」 → `/market-research market` のみ（定性だけ）
 
 **KIK-375 関連**:
@@ -156,7 +156,7 @@
 - 入替提案、新規購入判断、売却判断、リバランス、調整アドバイスの**実行**を伴う発言には、`.claude/rules/plan-check.md` の Plan→Execute→Review フローを適用する
 - 「PF見せて」「損益は？」等の情報照会や、「買った」「売った」等の記録は対象外
 - 判定: 文末が「〜したい」「〜すべき？」「〜探して」「〜直して」等の行動要求であること
-- 最初に `python3 scripts/extract_constraints.py "<ユーザー入力>"` を実行し、lessonから制約条件を抽出してからプランを策定する
+- 最初に `uv run python scripts/extract_constraints.py "<ユーザー入力>"` を実行し、lessonから制約条件を抽出してからプランを策定する
 
 **サブコマンド判定**:
 

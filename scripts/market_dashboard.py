@@ -2,7 +2,7 @@
 """Market quantitative dashboard — VIX, Fear & Greed, Yield Curve (KIK-567).
 
 Usage:
-    python3 scripts/market_dashboard.py
+    uv run python scripts/market_dashboard.py
 
 Uses yfinance only. No Grok API required.
 For qualitative analysis, use: /market-research market

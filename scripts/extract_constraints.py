@@ -4,8 +4,8 @@
 Extracts action type and relevant lesson constraints from user query.
 
 Usage:
-    python3 scripts/extract_constraints.py "7751.Tを売って代わりを探して"
-    python3 scripts/extract_constraints.py "NVDAを買いたい" --format markdown
+    uv run python scripts/extract_constraints.py "7751.Tを売って代わりを探して"
+    uv run python scripts/extract_constraints.py "NVDAを買いたい" --format markdown
 """
 
 from __future__ import annotations

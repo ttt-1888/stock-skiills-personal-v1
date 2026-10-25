@@ -2,13 +2,13 @@
 """Auto-generate documentation from source code (KIK-525).
 
 Usage:
-    python3 scripts/generate_docs.py api-reference       # docs/api-reference.md
-    python3 scripts/generate_docs.py architecture         # CLAUDE.md Architecture section
-    python3 scripts/generate_docs.py test-count           # development.md test count
-    python3 scripts/generate_docs.py skill-catalog        # docs/skill-catalog.md overview table
-    python3 scripts/generate_docs.py data-models-verify   # Verify docs/data-models.md
-    python3 scripts/generate_docs.py all                  # Run all generators
-    python3 scripts/generate_docs.py check [--quiet]      # Check staleness (exit 0/1)
+    uv run python scripts/generate_docs.py api-reference       # docs/api-reference.md
+    uv run python scripts/generate_docs.py architecture         # CLAUDE.md Architecture section
+    uv run python scripts/generate_docs.py test-count           # development.md test count
+    uv run python scripts/generate_docs.py skill-catalog        # docs/skill-catalog.md overview table
+    uv run python scripts/generate_docs.py data-models-verify   # Verify docs/data-models.md
+    uv run python scripts/generate_docs.py all                  # Run all generators
+    uv run python scripts/generate_docs.py check [--quiet]      # Check staleness (exit 0/1)
 """
 
 import ast

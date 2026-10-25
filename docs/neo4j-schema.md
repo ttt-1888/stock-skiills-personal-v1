@@ -603,13 +603,13 @@ ORDER BY tt.date DESC, tt.rank ASC
 
 ```bash
 # fullモードでリサーチ実行
-NEO4J_MODE=full python3 .claude/skills/market-research/scripts/run_research.py stock NVDA
+NEO4J_MODE=full uv run python .claude/skills/market-research/scripts/run_research.py stock NVDA
 
 # summaryモードで後方互換動作
-NEO4J_MODE=summary python3 .claude/skills/stock-report/scripts/generate_report.py 7203.T
+NEO4J_MODE=summary uv run python .claude/skills/stock-report/scripts/generate_report.py 7203.T
 
 # Neo4j書き込み無効
-NEO4J_MODE=off python3 .claude/skills/stock-report/scripts/generate_report.py 7203.T
+NEO4J_MODE=off uv run python .claude/skills/stock-report/scripts/generate_report.py 7203.T
 ```
 
 ---

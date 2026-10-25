@@ -2,7 +2,7 @@
 """Clean up expired UpcomingEvent/SectorRotation nodes and orphan nodes (KIK-573).
 
 Usage:
-    python3 scripts/cleanup_expired_nodes.py [--dry-run] [--ttl-days 30]
+    uv run python scripts/cleanup_expired_nodes.py [--dry-run] [--ttl-days 30]
 """
 
 import argparse

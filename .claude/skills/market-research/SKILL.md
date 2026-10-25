@@ -2,7 +2,7 @@
 name: market-research
 description: "銘柄・業界・マーケット・ビジネスモデルの深掘りリサーチ。Grok API (X/Web検索) と yfinance を統合して多角的な分析レポートを生成する。"
 argument-hint: "[stock|industry|market|business] [対象]  例: stock 7203.T, industry 半導体, market 日経平均, business 7751.T"
-allowed-tools: Bash(python3 *)
+allowed-tools: Bash(uv run python *)
 ---
 
 # 深掘りリサーチスキル
@@ -12,7 +12,7 @@ $ARGUMENTS を解析してリサーチタイプと対象を判定し、以下の
 ## 実行コマンド
 
 ```bash
-python3 /Users/kikuchihiroyuki/stock-skills/.claude/skills/market-research/scripts/run_research.py <command> <target>
+uv run python .claude/skills/market-research/scripts/run_research.py <command> <target>
 ```
 
 ## 自然言語ルーティング
@@ -94,20 +94,20 @@ python3 /Users/kikuchihiroyuki/stock-skills/.claude/skills/market-research/scrip
 
 ```bash
 # 銘柄リサーチ
-python3 .../run_research.py stock 7203.T
-python3 .../run_research.py stock AAPL
+uv run python .../run_research.py stock 7203.T
+uv run python .../run_research.py stock AAPL
 
 # 業界リサーチ
-python3 .../run_research.py industry 半導体
-python3 .../run_research.py industry "Electric Vehicles"
+uv run python .../run_research.py industry 半導体
+uv run python .../run_research.py industry "Electric Vehicles"
 
 # マーケットリサーチ
-python3 .../run_research.py market 日経平均
-python3 .../run_research.py market "S&P500"
+uv run python .../run_research.py market 日経平均
+uv run python .../run_research.py market "S&P500"
 
 # ビジネスモデル分析
-python3 .../run_research.py business 7751.T
-python3 .../run_research.py business AAPL
+uv run python .../run_research.py business 7751.T
+uv run python .../run_research.py business AAPL
 ```
 
 ## 前提知識統合ルール (KIK-466)

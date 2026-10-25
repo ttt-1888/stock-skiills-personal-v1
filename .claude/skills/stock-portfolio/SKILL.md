@@ -2,7 +2,7 @@
 name: stock-portfolio
 description: "ポートフォリオ管理。保有銘柄の一覧表示・売買記録・構造分析。ストレステストの入力データ基盤。"
 argument-hint: "[command] [args]  例: snapshot, buy 7203.T 100 2850, sell AAPL 5, analyze, list"
-allowed-tools: Bash(python3 *)
+allowed-tools: Bash(uv run python *)
 ---
 
 # ポートフォリオ管理スキル
@@ -12,7 +12,7 @@ $ARGUMENTS を解析してコマンドを判定し、以下のコマンドを実
 ## 実行コマンド
 
 ```bash
-python3 /Users/kikuchihiroyuki/stock-skills/.claude/skills/stock-portfolio/scripts/run_portfolio.py <command> [args]
+uv run python .claude/skills/stock-portfolio/scripts/run_portfolio.py <command> [args]
 ```
 
 ## コマンド一覧
@@ -22,13 +22,13 @@ python3 /Users/kikuchihiroyuki/stock-skills/.claude/skills/stock-portfolio/scrip
 現在価格・損益・通貨換算を含むポートフォリオのスナップショットを生成する。
 
 ```bash
-python3 .../run_portfolio.py snapshot
+uv run python .../run_portfolio.py snapshot
 ```
 
 ### buy -- 購入記録追加
 
 ```bash
-python3 .../run_portfolio.py buy --symbol <sym> --shares <n> --price <p> [--currency JPY] [--date YYYY-MM-DD] [--memo テキスト] [--yes]
+uv run python .../run_portfolio.py buy --symbol <sym> --shares <n> --price <p> [--currency JPY] [--date YYYY-MM-DD] [--memo テキスト] [--yes]
 ```
 
 `--yes` (`-y`) を省略すると購入内容の確認プレビューを表示して終了する。`--yes` を指定すると確認をスキップして直接記録する（KIK-444）。
@@ -36,7 +36,7 @@ python3 .../run_portfolio.py buy --symbol <sym> --shares <n> --price <p> [--curr
 ### sell -- 売却記録
 
 ```bash
-python3 .../run_portfolio.py sell --symbol <sym> --shares <n> [--price <売却単価>] [--date YYYY-MM-DD] [--yes]
+uv run python .../run_portfolio.py sell --symbol <sym> --shares <n> [--price <売却単価>] [--date YYYY-MM-DD] [--yes]
 ```
 
 `--yes` (`-y`) を省略すると売却内容の確認プレビュー（取得単価・推定実現損益）を表示して終了する。`--yes` を指定すると確認をスキップして直接記録する（KIK-444）。
@@ -48,7 +48,7 @@ python3 .../run_portfolio.py sell --symbol <sym> --shares <n> [--price <売却�
 過去の売却記録（`--price` 付きで記録したもの）から損益統計を集計して表示する。
 
 ```bash
-python3 .../run_portfolio.py review [--year 2026] [--symbol NVDA]
+uv run python .../run_portfolio.py review [--year 2026] [--symbol NVDA]
 ```
 
 **出力内容:**
@@ -60,7 +60,7 @@ python3 .../run_portfolio.py review [--year 2026] [--symbol NVDA]
 地域/セクター/通貨/規模のHHI（ハーフィンダール指数）を算出し、ポートフォリオの偏りを分析する。規模別構成（大型/中型/小型/ETF/不明）テーブルを含む4軸分析（KIK-438, KIK-469 P2: ETF分類）。ETFはセクター「ETF」、規模「ETF」として独立分類される。
 
 ```bash
-python3 .../run_portfolio.py analyze
+uv run python .../run_portfolio.py analyze
 ```
 
 ### health -- ヘルスチェック
@@ -68,7 +68,7 @@ python3 .../run_portfolio.py analyze
 保有銘柄の投資仮説がまだ有効かをチェックする。テクニカル（SMA50/200, RSI, **ゴールデンクロス/デッドクロス検出**）とファンダメンタル（変化スコア、**株主還元安定度**）の多軸で3段階アラートを出力。**小型株は自動的に感度を引き上げ**（KIK-438）。
 
 ```bash
-python3 .../run_portfolio.py health
+uv run python .../run_portfolio.py health
 ```
 
 **テクニカル分析（KIK-356/374/438）:**
@@ -102,7 +102,7 @@ python3 .../run_portfolio.py health
 ヘルスチェック結果 + マーケットレジーム判定から、17ルール（P1-P10: ポジション別、F1-F7: PF全体）で具体的な調整アクション（SELL/SWAP/ADD/TRIM_CLASS/FLAG）を生成する。
 
 ```bash
-python3 .../run_portfolio.py adjust [--full]
+uv run python .../run_portfolio.py adjust [--full]
 ```
 
 CLIオプション:
@@ -120,7 +120,7 @@ CLIオプション:
 現在のポートフォリオ構造を分析し、集中リスクの低減と目標配分への調整案を提示する。
 
 ```bash
-python3 .../run_portfolio.py rebalance [options]
+uv run python .../run_portfolio.py rebalance [options]
 ```
 
 CLIオプション:
@@ -138,7 +138,7 @@ CLIオプション:
 保有銘柄ごとにアナリスト目標価格 or 過去リターン分布から12ヶ月の期待リターンを3シナリオ（楽観/ベース/悲観）で推定する。バリュートラップ警告・TOP/BOTTOM ランキング付き。
 
 ```bash
-python3 .../run_portfolio.py forecast
+uv run python .../run_portfolio.py forecast
 ```
 
 **推定手法:**
@@ -158,13 +158,13 @@ python3 .../run_portfolio.py forecast
 
 ```bash
 # 追加のみ（従来）
-python3 .../run_portfolio.py what-if --add "SYMBOL:SHARES:PRICE[,...]"
+uv run python .../run_portfolio.py what-if --add "SYMBOL:SHARES:PRICE[,...]"
 
 # スワップ（売却して購入）(KIK-451)
-python3 .../run_portfolio.py what-if --remove "SYMBOL:SHARES[,...]" --add "SYMBOL:SHARES:PRICE[,...]"
+uv run python .../run_portfolio.py what-if --remove "SYMBOL:SHARES[,...]" --add "SYMBOL:SHARES:PRICE[,...]"
 
 # 売却のみシミュレーション (KIK-451)
-python3 .../run_portfolio.py what-if --remove "SYMBOL:SHARES[,...]"
+uv run python .../run_portfolio.py what-if --remove "SYMBOL:SHARES[,...]"
 ```
 
 CLIオプション:
@@ -187,7 +187,7 @@ CLIオプション:
 蓄積されたスクリーニング結果からリターンを検証し、ベンチマーク（日経225/S&P500）と比較する。
 
 ```bash
-python3 .../run_portfolio.py backtest [options]
+uv run python .../run_portfolio.py backtest [options]
 ```
 
 CLIオプション:
@@ -205,7 +205,7 @@ CLIオプション:
 現在のポートフォリオを基に、複利計算で将来の資産推移をシミュレーションする。forecast の期待リターン + 配当再投資 + 毎月積立を複利で計算し、楽観/ベース/悲観の3シナリオで表示。
 
 ```bash
-python3 .../run_portfolio.py simulate [options]
+uv run python .../run_portfolio.py simulate [options]
 ```
 
 CLIオプション:
@@ -220,7 +220,7 @@ CLIオプション:
 portfolio.csv の内容をそのまま表示する。
 
 ```bash
-python3 .../run_portfolio.py list
+uv run python .../run_portfolio.py list
 ```
 
 ## 自然言語ルーティング
@@ -297,46 +297,46 @@ python3 .../run_portfolio.py list
 
 ```bash
 # スナップショット
-python3 .../run_portfolio.py snapshot
+uv run python .../run_portfolio.py snapshot
 
 # 購入記録
-python3 .../run_portfolio.py buy --symbol 7203.T --shares 100 --price 2850 --currency JPY --date 2025-06-15 --memo トヨタ
+uv run python .../run_portfolio.py buy --symbol 7203.T --shares 100 --price 2850 --currency JPY --date 2025-06-15 --memo トヨタ
 
 # 売却記録
-python3 .../run_portfolio.py sell --symbol AAPL --shares 5
+uv run python .../run_portfolio.py sell --symbol AAPL --shares 5
 
 # 構造分析
-python3 .../run_portfolio.py analyze
+uv run python .../run_portfolio.py analyze
 
 # 一覧表示
-python3 .../run_portfolio.py list
+uv run python .../run_portfolio.py list
 
 # ヘルスチェック
-python3 .../run_portfolio.py health
+uv run python .../run_portfolio.py health
 
 # 推定利回り
-python3 .../run_portfolio.py forecast
+uv run python .../run_portfolio.py forecast
 
 # リバランス提案
-python3 .../run_portfolio.py rebalance
-python3 .../run_portfolio.py rebalance --strategy defensive
-python3 .../run_portfolio.py rebalance --reduce-sector Technology --additional-cash 1000000
+uv run python .../run_portfolio.py rebalance
+uv run python .../run_portfolio.py rebalance --strategy defensive
+uv run python .../run_portfolio.py rebalance --reduce-sector Technology --additional-cash 1000000
 
 # What-Ifシミュレーション（追加のみ）
-python3 .../run_portfolio.py what-if --add "7203.T:100:2850,AAPL:10:250"
+uv run python .../run_portfolio.py what-if --add "7203.T:100:2850,AAPL:10:250"
 
 # What-Ifシミュレーション（スワップ: 7203.T売却 → 9984.T購入）(KIK-451)
-python3 .../run_portfolio.py what-if --remove "7203.T:100" --add "9984.T:50:7500"
+uv run python .../run_portfolio.py what-if --remove "7203.T:100" --add "9984.T:50:7500"
 
 # What-Ifシミュレーション（純売却）(KIK-451)
-python3 .../run_portfolio.py what-if --remove "7203.T:50"
+uv run python .../run_portfolio.py what-if --remove "7203.T:50"
 
 # 調整アドバイザー (KIK-496)
-python3 .../run_portfolio.py adjust
-python3 .../run_portfolio.py adjust --full
+uv run python .../run_portfolio.py adjust
+uv run python .../run_portfolio.py adjust --full
 
 # バックテスト
-python3 .../run_portfolio.py backtest --preset alpha --region jp --days 90
+uv run python .../run_portfolio.py backtest --preset alpha --region jp --days 90
 ```
 
 ## 前提知識統合ルール (KIK-466)

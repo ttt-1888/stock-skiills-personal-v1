@@ -51,8 +51,8 @@ Orchestrator が中心となり、7名のエージェント体制でワークフ
 
 ### Phase 1: Pre-Plan
 
-1. `python3 scripts/get_context.py "<ユーザー入力>"` でグラフコンテキストを取得
-2. `python3 scripts/extract_constraints.py "<ユーザー入力>"` でlesson制約を取得（投資判断の可能性がある場合）
+1. `uv run python scripts/get_context.py "<ユーザー入力>"` でグラフコンテキストを取得
+2. `uv run python scripts/extract_constraints.py "<ユーザー入力>"` でlesson制約を取得（投資判断の可能性がある場合）
 3. `config/user_profile.yaml` からユーザー前提設定を参照（ファイルがない場合はデフォルト値）
 4. 投資判断を伴う場合 → **Context Analyst** に金融市場の歴史的文脈を取得させる
 5. **直近イベントスキャン**: 保有銘柄の決算日・材料を WebSearch または yfinance で事前確認。決算7日以内の銘柄がある場合、Phase 2 の Strategist に「決算タイミングを考慮した設計」を指示。
