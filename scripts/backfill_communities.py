@@ -2,7 +2,7 @@
 """Backfill community detection for existing Stock nodes (KIK-548).
 
 Usage:
-    python3 scripts/backfill_communities.py [--dry-run] [--cutoff 0.3] [--top-k 10] [--resolution 1.0]
+    uv run python scripts/backfill_communities.py [--dry-run] [--cutoff 0.3] [--top-k 10] [--resolution 1.0]
 
 Runs the community detection pipeline (KIK-547) on all Stock nodes in Neo4j:
 1. Fetch co-occurrence vectors (Screen/Theme/Sector/News)
@@ -180,7 +180,7 @@ def main():
     try:
         import networkx  # noqa: F401
     except ImportError:
-        print("ERROR: networkx is required. Install with: pip install networkx")
+        print("ERROR: networkx is required. Install with: uv add networkx")
         sys.exit(1)
 
     if args.dry_run:

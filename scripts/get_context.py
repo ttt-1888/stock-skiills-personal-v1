@@ -2,9 +2,9 @@
 """CLI wrapper for auto graph context injection (KIK-411).
 
 Usage:
-    python3 scripts/get_context.py "7203.Tってどう？"
-    python3 scripts/get_context.py "トヨタの状況は？"
-    python3 scripts/get_context.py "PF大丈夫？"
+    uv run python scripts/get_context.py "7203.Tってどう？"
+    uv run python scripts/get_context.py "トヨタの状況は？"
+    uv run python scripts/get_context.py "PF大丈夫？"
 """
 
 import os
@@ -17,7 +17,7 @@ from src.data.context.auto_context import get_context  # noqa: E402
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python3 scripts/get_context.py <user_input>")
+        print("Usage: uv run python scripts/get_context.py <user_input>")
         sys.exit(1)
 
     user_input = " ".join(sys.argv[1:])

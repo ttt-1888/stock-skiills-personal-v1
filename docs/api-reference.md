@@ -11,13 +11,13 @@ Centralised threshold loader (KIK-446).
 - `get_thresholds() -> dict` — Return the full thresholds dict, loading from disk on first call.
 - `th(section: str, key: str, default)` — Look up *section.key* in thresholds, returning *default* on miss.
 
-### src.core.action_item_bridge (KIK-472: GraphRAG紐付け)
+### src.core.action_item_bridge
 
 Action item bridge: detect -> dedup -> Linear create -> Neo4j save (KIK-472).
 
 - `process_action_items(suggestions: list[dict], health_data: dict | None=None, context: dict | None=None, *, graph_writer: GraphWriter | None=None) -> list[dict]` — Full pipeline: detect -> dedup -> create Linear issues -> save Neo4j.
 
-### src.core.action_item_detector (KIK-472: Linear連携)
+### src.core.action_item_detector
 
 Action item detector for proactive suggestions (KIK-472, KIK-489).
 
@@ -73,7 +73,7 @@ Portfolio health check orchestrator (KIK-576).
 Theme exposure analysis for portfolio health checks (KIK-604).
 
 
-### src.core.health.theme_balance (KIK-605: テーマバランス制御)
+### src.core.health.theme_balance
 
 Theme balance checks for portfolio health (KIK-605).
 
@@ -87,17 +87,17 @@ Trend health analysis for portfolio health checks (KIK-576).
 
 - `check_trend_health(hist: Optional[pd.DataFrame], cross_lookback: int | None=None) -> dict` — Analyze trend health from price history.
 
-### src.core.health_check (KIK-469: ETF対応+PF統合)
+### src.core.health_check
 
 Backward-compatible re-export (KIK-576). Import from src.core.health directly.
 
 
-### src.core.health_etf (KIK-469/512: ETFヘルスチェック)
+### src.core.health_etf
 
 Backward-compatible re-export (KIK-576). Import from src.core.health.etf directly.
 
 
-### src.core.health_labels (KIK-371/512: 長期適性ラベル生成)
+### src.core.health_labels
 
 Backward-compatible re-export (KIK-576). Import from src.core.health.labels directly.
 
@@ -216,7 +216,7 @@ A single rebalancing action proposal.
 - `to_dict() -> dict`
 - `empty() -> 'SimulationResult'` — シミュレーション不可時の空結果。
 
-### src.core.portfolio.adjustment_advisor (KIK-496: 17ルール調整アドバイザー)
+### src.core.portfolio.adjustment_advisor
 
 Portfolio adjustment advisor — rule-based action engine (KIK-496).
 
@@ -255,7 +255,7 @@ Portfolio adjustment advisor — rule-based action engine (KIK-496).
 | `summary` | `str` |
 
 
-### src.core.portfolio.backtest (KIK-441)
+### src.core.portfolio.backtest
 
 Backtest engine -- verify returns of previously screened stocks.
 
@@ -278,7 +278,7 @@ FX conversion utilities (KIK-511).
 - `get_rate(currency: str, fx_rates: dict[str, float]) -> float` — Return the per-unit JPY rate for *currency*.
 - `convert_to_jpy(amount: float, currency: str, fx_rates: dict[str, float]) -> float` — Convert *amount* in *currency* to JPY.
 
-### src.core.portfolio.market_regime (KIK-496: 市場レジーム検出)
+### src.core.portfolio.market_regime
 
 Market regime detection for adjustment advisor (KIK-496).
 
@@ -337,13 +337,13 @@ What-If portfolio simulation (KIK-376, KIK-451).
 - `remove_positions(current: list[dict], removals: list[dict]) -> list[dict]` — Remove specified shares from the current portfolio (simulation only).
 - `run_what_if_simulation(csv_path: str, proposed: list[dict], client, removals: list[dict] | None=None) -> dict` — Run What-If simulation comparing before/after portfolio metrics.
 
-### src.core.portfolio.rebalancer (KIK-376)
+### src.core.portfolio.rebalancer
 
 Portfolio rebalancer engine (KIK-363).
 
 - `generate_rebalance_proposal(forecast_result: dict, health_result: Optional[dict]=None, concentration: Optional[dict]=None, high_corr_pairs: Optional[list[dict]]=None, strategy: str='balanced', reduce_sector: Optional[str]=None, reduce_currency: Optional[str]=None, max_single_ratio: Optional[float]=None, max_sector_hhi: Optional[float]=None, max_region_hhi: Optional[float]=None, additional_cash: float=0.0, min_dividend_yield: Optional[float]=None) -> dict` — Generate a rebalancing proposal for the portfolio.
 
-### src.core.portfolio.simulator (KIK-376)
+### src.core.portfolio.simulator
 
 Portfolio compound interest simulation engine (KIK-366).
 
@@ -351,7 +351,7 @@ Portfolio compound interest simulation engine (KIK-366).
 - `calculate_target_year(yearly_values: list[float], target: float) -> Optional[float]` — Calculate the year when target is reached via linear interpolation.
 - `calculate_required_monthly(current_value: float, return_rate: float, dividend_yield: float, target: float, years: int, reinvest_dividends: bool=True) -> float` — Calculate required monthly contribution to reach target.
 
-### src.core.portfolio.small_cap (KIK-438: 小型株アロケーション)
+### src.core.portfolio.small_cap
 
 Small-cap classification and allocation rules (KIK-438/574).
 
@@ -470,7 +470,7 @@ Storage for investment notes (thesis, concern, lesson, etc.).
 - `save_note(symbol: str, note_type: str, content: str, *, category: str='stock', base_dir: str='data/notes') -> str` — Save an investment note. Returns absolute path of saved file.
 - `list_notes(symbol: str | None=None, note_type: str | None=None, category: str | None=None, base_dir: str='data/notes') -> list[dict]` — Return notes matching the given filters.
 
-### src.core.proactive_engine (KIK-435)
+### src.core.proactive_engine
 
 Proactive action suggestions based on accumulated knowledge graph (KIK-435).
 
@@ -482,7 +482,7 @@ Generate proactive next-action suggestions from the knowledge graph.
 
 - `get_suggestions(context: str='', symbol: str='', sector: str='') -> list[dict]` — Return up to 3 suggestions sorted by urgency (high > medium > low).
 
-### src.core.research.researcher (KIK-359: Grok統合リサーチ)
+### src.core.research.researcher
 
 Deep research orchestration for stocks, industries, and markets (KIK-367).
 
@@ -491,7 +491,7 @@ Deep research orchestration for stocks, industries, and markets (KIK-367).
 - `research_market(market: str, yahoo_client_module=None, *, research_client: ResearchClient | None=None) -> dict` — Run market overview research via yfinance + Grok.
 - `research_business(symbol: str, yahoo_client_module: StockInfoProvider, *, research_client: ResearchClient | None=None) -> dict` — Run business model research combining yfinance and Grok.
 
-### src.core.return_estimate (KIK-469 P2: volatility+is_etf)
+### src.core.return_estimate
 
 Portfolio return estimation with 3 scenarios (KIK-359).
 
@@ -513,7 +513,7 @@ Rule-based portfolio recommendation engine (KIK-352).
 
 - `generate_recommendations(concentration: dict, correlation_pairs: Optional[list[dict]]=None, var_result: Optional[dict]=None, scenario_result: Optional[dict]=None, sensitivities: Optional[list[dict]]=None) -> list[dict]` — Generate rule-based portfolio recommendations.
 
-### src.core.risk.scenario_analysis (KIK-354)
+### src.core.risk.scenario_analysis
 
 Scenario-based causal chain analysis for portfolio stress testing (KIK-341).
 
@@ -546,7 +546,7 @@ Alpha signal: change score calculation (KIK-346, KIK-349).
 - `compute_roe_trend_score(stock_detail: dict) -> tuple[float, Optional[float]]` — ROE improvement trend score.  Returns (score, raw_slope).
 - `compute_change_score(stock_detail: dict) -> dict` — Compute composite change score across all four indicators.
 
-### src.core.screening.alpha_screener (KIK-357)
+### src.core.screening.alpha_screener
 
 AlphaScreener: value + change quality + pullback multi-axis screening.
 
@@ -556,7 +556,7 @@ Alpha signal screener: value + change quality + pullback.
 
 - `screen(region: str='jp', top_n: int=20) -> list[dict]`
 
-### src.core.screening.contrarian (KIK-504/533: 逆張りスコア3軸100pt)
+### src.core.screening.contrarian
 
 Contrarian signal: detect oversold stocks with solid fundamentals (KIK-504, KIK-533).
 
@@ -565,7 +565,7 @@ Contrarian signal: detect oversold stocks with solid fundamentals (KIK-504, KIK-
 - `compute_fundamental_divergence(stock_data: dict) -> dict` — Fundamental divergence score (30pt max).
 - `compute_contrarian_score(hist: pd.DataFrame | None, stock_data: dict) -> dict` — Composite contrarian score (0-100pt, KIK-533: 3-axis only).
 
-### src.core.screening.contrarian_screener (KIK-504/533: ヘルスチェック連動)
+### src.core.screening.contrarian_screener
 
 ContrarianScreener: oversold-but-solid screening pipeline (KIK-504, KIK-533, KIK-530, KIK-531).
 
@@ -581,7 +581,7 @@ Filter functions for stock screening criteria.
 
 - `apply_filters(stock_data: dict, criteria: dict) -> bool` — Return True if stock_data passes all criteria.
 
-### src.core.screening.growth_screener (KIK-446)
+### src.core.screening.growth_screener
 
 GrowthScreener: growth-oriented screening (growth/high-growth/small-cap-growth).
 
@@ -604,7 +604,7 @@ Financial indicators and value-score calculation.
 - `assess_return_stability(history: list[dict]) -> dict` — Assess shareholder return stability from multi-year history.
 - `calculate_shareholder_return(stock: dict) -> dict` — Calculate total shareholder return rate.
 
-### src.core.screening.momentum (KIK-506: モメンタム急騰4軸検出)
+### src.core.screening.momentum
 
 Momentum technical indicators for momentum-based screening.
 
@@ -612,7 +612,7 @@ Momentum technical indicators for momentum-based screening.
 - `compute_roc(close: pd.Series, period: int=12) -> pd.Series` — Compute Rate of Change (momentum).
 - `detect_momentum_reversal(hist: pd.DataFrame) -> dict` — Detect momentum reversal opportunity in stocks.
 
-### src.core.screening.momentum_screener (KIK-506)
+### src.core.screening.momentum_screener
 
 MomentumScreener: momentum surge / breakout screening (KIK-506, KIK-530: parallel).
 
@@ -622,7 +622,7 @@ Screen for momentum surge / breakout stocks.
 
 - `screen(region: str='jp', top_n: int=20, submode: str='surge', sector: Optional[str]=None, theme: Optional[str]=None) -> list[dict]` — Run the momentum screening pipeline.
 
-### src.core.screening.pullback_screener (KIK-332)
+### src.core.screening.pullback_screener
 
 PullbackScreener: pullback-in-uptrend entry opportunity screening (KIK-530: parallel).
 
@@ -656,7 +656,7 @@ Screen stocks using yfinance EquityQuery + yf.screen().
 Backward-compatible re-export of screener classes and registry (KIK-422, KIK-514).
 
 
-### src.core.screening.screener_registry (KIK-514: Strategy/Factory + RegionConfig)
+### src.core.screening.screener_registry
 
 ScreenerRegistry: Strategy/Factory pattern for screening dispatch (KIK-514).
 
@@ -710,7 +710,7 @@ Technical indicators for pullback-in-uptrend screening (KIK-332).
 - `detect_pullback_in_uptrend(hist: pd.DataFrame) -> dict` — Detect pullback buying opportunity in an uptrend.
 - `detect_momentum_surge(hist: pd.DataFrame, fifty_day_avg_change_pct: float | None=None, fifty_two_week_high_change_pct: float | None=None) -> dict` — Detect momentum surge / breakout signals (KIK-506).
 
-### src.core.screening.trending_screener (KIK-440: Grokトレンドテーマ検出)
+### src.core.screening.trending_screener
 
 TrendingScreener: X (Twitter) trending stocks with fundamental enrichment.
 
@@ -731,7 +731,7 @@ Screen stocks for value investment opportunities.
 
 - `screen(symbols: Optional[list[str]]=None, criteria: Optional[dict]=None, preset: Optional[str]=None, top_n: int=20) -> list[dict]` — Run the screening process and return the top results.
 
-### src.core.ticker_utils (KIK-449)
+### src.core.ticker_utils
 
 Ticker symbol utilities: currency/country inference from symbol suffixes.
 
@@ -746,7 +746,7 @@ Ticker symbol utilities: currency/country inference from symbol suffixes.
 - `infer_region_code(symbol: str) -> str` — Infer lowercase region code from ticker suffix (KIK-438).
 - `infer_country(symbol: str, info: dict | None=None) -> str` — Infer the country/region from the ticker symbol suffix.
 
-### src.core.value_trap (KIK-381)
+### src.core.value_trap
 
 Value trap detection (extracted from health_check.py, KIK-392).
 
@@ -754,7 +754,7 @@ Value trap detection (extracted from health_check.py, KIK-392).
 
 ## Data Layer
 
-### src.data.context.auto_context (KIK-411/420: ハイブリッド検索)
+### src.data.context.auto_context
 
 Auto graph context injection for user prompts (KIK-411/420/427).
 
@@ -780,7 +780,7 @@ Freshness label and threshold logic for graph context (KIK-427/428).
 - `freshness_label(date_str: str) -> str` — Return freshness label for a date string.
 - `freshness_action(label: str) -> str` — Return recommended action for a freshness label.
 
-### src.data.context.grok_context (KIK-488: Neo4j知識→Grokプロンプト注入)
+### src.data.context.grok_context
 
 Compact knowledge context extraction for Grok API prompt injection (KIK-488).
 
@@ -789,7 +789,7 @@ Compact knowledge context extraction for Grok API prompt injection (KIK-488).
 - `get_market_context() -> str` — Extract compact context for market research.
 - `get_business_context(symbol: str) -> str` — Extract compact context for business model analysis.
 
-### src.data.context.screen_annotator (KIK-452: スクリーニング結果エンリッチ)
+### src.data.context.screen_annotator
 
 Screen result annotator -- enrich screening results with sell/note context (KIK-418/419).
 
@@ -797,7 +797,7 @@ Screen result annotator -- enrich screening results with sell/note context (KIK-
 - `get_notes_for_symbols(symbols: list[str], note_types: Optional[list[str]]=None) -> dict[str, list[dict]]` — Get notes for symbols. Returns {symbol: [{type, content, date}]}.
 - `annotate_results(results: list[dict], sell_lookback_days: int=90) -> tuple[list[dict], int]` — Annotate screening results with sell history and note markers.
 
-### src.data.context.screening_context (KIK-452: GraphRAGコンテキスト)
+### src.data.context.screening_context
 
 GraphRAG context aggregator for screening output (KIK-452).
 
@@ -808,7 +808,7 @@ GraphRAG context aggregator for screening output (KIK-452).
 Graph-state analysis and skill recommendation (KIK-411/414).
 
 
-### src.data.context.summary_builder (KIK-420: セマンティックサマリー生成)
+### src.data.context.summary_builder
 
 Semantic summary template builders for Neo4j vector search (KIK-420).
 
@@ -828,7 +828,7 @@ Semantic summary template builders for Neo4j vector search (KIK-420).
 TEI vector search and result merging for hybrid context retrieval (KIK-420).
 
 
-### src.data.embedding_client (KIK-420: TEIベクトル検索)
+### src.data.embedding_client
 
 TEI (Text Embeddings Inference) REST API client (KIK-420).
 
@@ -847,7 +847,7 @@ ActionItem graph queries (KIK-472).
 
 - `get_action_item_history(symbol: str | None=None, limit: int=10) -> list[dict]` — Get ActionItem nodes for graph-query skill.
 
-### src.data.graph_query.community (KIK-547: コミュニティ検出)
+### src.data.graph_query.community
 
 Community detection via co-occurrence analysis (KIK-547).
 
@@ -879,7 +879,7 @@ MarketContext/Indicator/UpcomingEvent/ThemeTrend graph queries.
 - `get_theme_trends(limit: int=20, region: str='') -> list[dict]` — Get recent theme trend history.
 - `get_theme_trend_diff() -> dict` — Compare the latest two theme detections to find rising/falling themes.
 
-### src.data.graph_query.nl_query (KIK-411: 自然言語グラフクエリ)
+### src.data.graph_query.nl_query
 
 Natural language → graph query dispatcher (KIK-409 Phase 1).
 
@@ -942,7 +942,7 @@ Shared utilities for graph_store submodules (KIK-507).
 - `create_ai_relationship(from_id: str, to_id: str, rel_type: str, confidence: float, reason: str) -> bool` — MERGE an AI-determined semantic relationship between two nodes (KIK-434).
 - `clear_all() -> bool` — Delete all nodes and relationships. Used for --rebuild.
 
-### src.data.graph_store.linker (KIK-434: AI知識グラフリンク)
+### src.data.graph_store.linker
 
 AI-driven knowledge graph linking (KIK-434).
 
@@ -1119,7 +1119,7 @@ Unified lesson conflict detection engine (KIK-570).
 - `find_conflicts(new_lesson: dict, existing_lessons: list[dict], similarity_threshold: float=0.5, max_results: int=5) -> list[dict]` — Detect conflicts between a new lesson and existing lessons.
 - `find_conflict_pairs(lessons: list[dict]) -> dict[str, str]` — Find lesson IDs with potential contradictions.
 
-### src.data.linear_client (KIK-472)
+### src.data.linear_client
 
 Linear API client for action item management (KIK-472).
 
@@ -1128,7 +1128,7 @@ Linear API client for action item management (KIK-472).
 - `find_issue_by_title(title_prefix: str) -> Optional[dict]` — Search for an existing issue by title prefix (dedup check).
 - `update_issue(issue_id: str, state: str | None=None) -> bool` — Update a Linear issue state.
 
-### src.data.note_manager (KIK-473: journal type + auto symbol detection)
+### src.data.note_manager
 
 Note manager -- dual-write to JSON files and Neo4j (KIK-397, KIK-429).
 
@@ -1148,6 +1148,7 @@ User profile settings loader (KIK-599).
 - `get_tax_cost(gain_jpy: float) -> dict` — Calculate tax on capital gains.
 - `get_broker_info() -> dict` — Get broker name and account type.
 - `needs_tax_filing() -> bool` — Check if tax filing is required.
+- `get_screening_regions() -> dict` — Get preferred and excluded regions for screening.
 - `reset_cache()` — Clear cached profile (for testing).
 
 ### src.data.yahoo_client._cache
@@ -1223,7 +1224,7 @@ Shared formatting helpers used across all output formatters (KIK-394).
 Shared private helpers for portfolio formatter modules (KIK-447).
 
 
-### src.output.adjust_formatter (KIK-496)
+### src.output.adjust_formatter
 
 Markdown formatter for adjustment plans (KIK-496).
 
@@ -1257,7 +1258,7 @@ Output formatters for screening results (KIK-575: unified renderer).
 - `format_momentum_markdown(results: list[dict]) -> str` — Format momentum/surge screening results.
 - `format_auto_theme_header(themes: list[dict], skipped: list[dict] | None=None) -> str` — Format Grok trending themes header (KIK-440).
 
-### src.output.health_formatter (KIK-469 P2: stock/ETFテーブル分離)
+### src.output.health_formatter
 
 Health check output formatter (KIK-447, split from portfolio_formatter.py).
 
@@ -1271,7 +1272,7 @@ Output formatters for portfolio management (KIK-342).
 - `format_position_list(portfolio: list[dict]) -> str` — Format a list of portfolio positions as a Markdown table.
 - `format_trade_result(result: dict, action: str) -> str` — Format a buy/sell trade result as Markdown.
 
-### src.output.rebalance_formatter (KIK-376)
+### src.output.rebalance_formatter
 
 Rebalance proposal output formatter (KIK-447, split from portfolio_formatter.py).
 
@@ -1286,19 +1287,19 @@ Output formatters for deep research results (KIK-367).
 - `format_market_research(data: dict) -> str` — Format market overview research as a Markdown report.
 - `format_business_research(data: dict) -> str` — Format business model research as a Markdown report.
 
-### src.output.review_formatter (KIK-441)
+### src.output.review_formatter
 
 Performance review formatter (KIK-441).
 
 - `format_performance_review(data: dict, year: Optional[int]=None, symbol: Optional[str]=None) -> str` — Format trade performance review as Markdown.
 
-### src.output.screening_summary_formatter (KIK-452/532)
+### src.output.screening_summary_formatter
 
 Formatter for GraphRAG screening context output (KIK-452).
 
 - `format_screening_summary(context: dict) -> str` — Format GraphRAG context as markdown for screening output (KIK-452, KIK-532).
 
-### src.output.simulate_formatter (KIK-376)
+### src.output.simulate_formatter
 
 Simulation and what-if output formatters (KIK-447, split from portfolio_formatter.py).
 

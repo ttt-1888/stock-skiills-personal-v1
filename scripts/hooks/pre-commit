@@ -8,11 +8,11 @@ SRC_CHANGED=$(git diff --cached --name-only | grep -cE '^src/')
 if [ "$SRC_CHANGED" -gt 0 ]; then
   if [ -f "scripts/generate_docs.py" ]; then
     # Auto-generate docs from source
-    python3 scripts/generate_docs.py all 2>&1
+    uv run python scripts/generate_docs.py all 2>&1
     git add docs/api-reference.md CLAUDE.md .claude/rules/development.md docs/skill-catalog.md 2>/dev/null
 
     # Verify data-models.md is in sync with fixtures
-    python3 scripts/generate_docs.py data-models-verify 2>&1
+    uv run python scripts/generate_docs.py data-models-verify 2>&1
     if [ $? -ne 0 ]; then
       echo "⚠️  docs/data-models.md is out of sync. Please update manually."
       exit 1

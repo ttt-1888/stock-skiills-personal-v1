@@ -49,7 +49,7 @@ Orchestrator は以下の場合に Plan Phase をフル実行する:
 
 **目的**: どんなステップで、何を分析し、どう比較するかを決める。意思決定はしない。
 
-1. `python3 scripts/extract_constraints.py "<ユーザー入力>"` を実行し制約JSONを取得
+1. `uv run python scripts/extract_constraints.py "<ユーザー入力>"` を実行し制約JSONを取得
 2. 以下3エージェントを並列起動し、**ワークフロー**を設計させる
 
 #### Strategist
@@ -184,8 +184,8 @@ Plan Phaseで設計したワークフローに従い、各ステップを実行�
 
 ```bash
 # JSON形式（エージェント入力用）
-python3 scripts/extract_constraints.py "<ユーザー入力>"
+uv run python scripts/extract_constraints.py "<ユーザー入力>"
 
 # Markdown形式（人間可読）
-python3 scripts/extract_constraints.py "<ユーザー入力>" --format markdown
+uv run python scripts/extract_constraints.py "<ユーザー入力>" --format markdown
 ```

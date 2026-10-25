@@ -2,8 +2,8 @@
 """Check and fix portfolio-to-Neo4j sync integrity (KIK-555).
 
 Usage:
-    python3 scripts/check_graph_sync.py          # Check only
-    python3 scripts/check_graph_sync.py --fix    # Auto-fix missing data
+    uv run python scripts/check_graph_sync.py          # Check only
+    uv run python scripts/check_graph_sync.py --fix    # Auto-fix missing data
 """
 
 import argparse

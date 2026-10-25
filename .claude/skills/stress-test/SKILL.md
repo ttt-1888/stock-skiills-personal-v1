@@ -2,7 +2,7 @@
 name: stress-test
 description: "ポートフォリオのストレステスト。保有銘柄リストを受け取り、ショック感応度・シナリオ分析・因果連鎖を通じてPFの弱点を特定する。"
 argument-hint: "[銘柄リスト] [--scenario SCENARIO]  例: 7203.T,AAPL,D05.SI --scenario トリプル安"
-allowed-tools: Bash(python3 *)
+allowed-tools: Bash(uv run python *)
 ---
 
 # ポートフォリオ ストレステスト スキル
@@ -12,7 +12,7 @@ $ARGUMENTS を解析してポートフォリオ銘柄リストとシナリオを
 ## 実行コマンド
 
 ```bash
-python3 /Users/kikuchihiroyuki/stock-skills/.claude/skills/stress-test/scripts/run_stress_test.py --portfolio <symbols> [--scenario <scenario>] [--weights <weights>]
+uv run python .claude/skills/stress-test/scripts/run_stress_test.py --portfolio <symbols> [--scenario <scenario>] [--weights <weights>]
 ```
 
 ## 自然言語ルーティング
@@ -108,16 +108,16 @@ python3 /Users/kikuchihiroyuki/stock-skills/.claude/skills/stress-test/scripts/r
 
 ```bash
 # 基本的なストレステスト（シナリオ自動判定）
-python3 .../run_stress_test.py --portfolio 7203.T,AAPL,D05.SI
+uv run python .../run_stress_test.py --portfolio 7203.T,AAPL,D05.SI
 
 # トリプル安シナリオ
-python3 .../run_stress_test.py --portfolio 7203.T,9984.T,6758.T --scenario トリプル安
+uv run python .../run_stress_test.py --portfolio 7203.T,9984.T,6758.T --scenario トリプル安
 
 # 比率指定
-python3 .../run_stress_test.py --portfolio 7203.T,AAPL,D05.SI --weights 0.5,0.3,0.2
+uv run python .../run_stress_test.py --portfolio 7203.T,AAPL,D05.SI --weights 0.5,0.3,0.2
 
 # カスタムシナリオ
-python3 .../run_stress_test.py --portfolio 7203.T,AAPL --scenario "半導体サプライチェーン崩壊"
+uv run python .../run_stress_test.py --portfolio 7203.T,AAPL --scenario "半導体サプライチェーン崩壊"
 ```
 
 ## 前提知識統合ルール (KIK-466)

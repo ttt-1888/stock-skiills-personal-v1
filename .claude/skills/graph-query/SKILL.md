@@ -2,7 +2,7 @@
 name: graph-query
 description: 知識グラフへの自然言語クエリ。過去のレポート・スクリーニング・取引・リサーチ・市況を検索。
 argument-hint: "自然言語クエリ（例: トヨタの前回レポートは？）"
-allowed-tools: Bash(python3 *)
+allowed-tools: Bash(uv run python *)
 ---
 
 # グラフクエリスキル
@@ -12,7 +12,7 @@ allowed-tools: Bash(python3 *)
 ## 実行コマンド
 
 ```bash
-python3 .claude/skills/graph-query/scripts/run_query.py "自然言語クエリ"
+uv run python .claude/skills/graph-query/scripts/run_query.py "自然言語クエリ"
 ```
 
 ## 自然言語ルーティング

@@ -2,7 +2,7 @@
 name: screen-stocks
 description: 割安株スクリーニング。EquityQuery で銘柄リスト不要のスクリーニング。PER/PBR/配当利回り/ROE等で日本株・米国株・ASEAN株・香港株・韓国株・台湾株等60地域から割安銘柄を検索する。
 argument-hint: "[region] [preset] [--sector SECTOR]  例: japan value, us high-dividend, asean quality, hk value --sector Technology"
-allowed-tools: Bash(python3 *)
+allowed-tools: Bash(uv run python *)
 ---
 
 # 割安株スクリーニングスキル
@@ -12,7 +12,7 @@ $ARGUMENTS を解析して region、preset、sector を判定し、以下のコ�
 ## 実行コマンド
 
 ```bash
-python3 /Users/kikuchihiroyuki/stock-skills/.claude/skills/screen-stocks/scripts/run_screen.py --region <region> --preset <preset> [--sector <sector>] [--theme <theme>] [--top <N>] [--mode <query|legacy>]
+uv run python .claude/skills/screen-stocks/scripts/run_screen.py --region <region> --preset <preset> [--sector <sector>] [--theme <theme>] [--top <N>] [--mode <query|legacy>]
 ```
 
 ## 自然言語ルーティング
@@ -86,13 +86,13 @@ python3 /Users/kikuchihiroyuki/stock-skills/.claude/skills/screen-stocks/scripts
 
 ```bash
 # 日本のトレンドテーマで割安株をスクリーニング
-python3 .../run_screen.py --region japan --preset value --auto-theme
+uv run python .../run_screen.py --region japan --preset value --auto-theme
 
 # 米国のトレンドテーマで高成長株
-python3 .../run_screen.py --region us --preset high-growth --auto-theme
+uv run python .../run_screen.py --region us --preset high-growth --auto-theme
 
 # グローバルのトレンドテーマでデフォルトプリセット
-python3 .../run_screen.py --preset value --auto-theme
+uv run python .../run_screen.py --preset value --auto-theme
 ```
 
 ## スクリーニングモード
@@ -184,109 +184,109 @@ python3 .../run_screen.py --preset value --auto-theme
 
 ```bash
 # 日本の割安株（デフォルト）
-python3 .../run_screen.py --region japan --preset value
+uv run python .../run_screen.py --region japan --preset value
 
 # 米国の高配当テクノロジー株
-python3 .../run_screen.py --region us --preset high-dividend --sector Technology
+uv run python .../run_screen.py --region us --preset high-dividend --sector Technology
 
 # 香港のバリュー株
-python3 .../run_screen.py --region hk --preset value
+uv run python .../run_screen.py --region hk --preset value
 
 # ASEAN の成長バリュー株（sg, th, my, id, ph を順次実行）
-python3 .../run_screen.py --region asean --preset growth-value
+uv run python .../run_screen.py --region asean --preset growth-value
 
 # Legacy モードで米国株をスクリーニング
-python3 .../run_screen.py --region us --preset value --mode legacy
+uv run python .../run_screen.py --region us --preset value --mode legacy
 
 # 日本株の押し目買い候補
-python3 .../run_screen.py --region japan --preset pullback
+uv run python .../run_screen.py --region japan --preset pullback
 
 # 日本株のアルファシグナル（割安＋変化＋押し目）
-python3 .../run_screen.py --region japan --preset alpha
+uv run python .../run_screen.py --region japan --preset alpha
 
 # 米国株のアルファシグナル
-python3 .../run_screen.py --region us --preset alpha
+uv run python .../run_screen.py --region us --preset alpha
 
 # 日本の割安株 + 押し目フィルタ
-python3 .../run_screen.py --region japan --preset value --with-pullback
+uv run python .../run_screen.py --region japan --preset value --with-pullback
 
 # 米国の高配当株 + 押し目フィルタ
-python3 .../run_screen.py --region us --preset high-dividend --with-pullback
+uv run python .../run_screen.py --region us --preset high-dividend --with-pullback
 
 # X (Twitter) で話題の日本株
-python3 .../run_screen.py --region japan --preset trending
+uv run python .../run_screen.py --region japan --preset trending
 
 # X で話題のAI関連米国株
-python3 .../run_screen.py --region us --preset trending --theme "AI"
+uv run python .../run_screen.py --region us --preset trending --theme "AI"
 
 # X で話題の半導体関連銘柄
-python3 .../run_screen.py --region japan --preset trending --theme "半導体"
+uv run python .../run_screen.py --region japan --preset trending --theme "半導体"
 
 # 日本の長期投資候補
-python3 .../run_screen.py --region japan --preset long-term
+uv run python .../run_screen.py --region japan --preset long-term
 
 # 米国の長期投資候補
-python3 .../run_screen.py --region us --preset long-term
+uv run python .../run_screen.py --region us --preset long-term
 
 # 日本の純成長株（割安制約なし）
-python3 .../run_screen.py --region japan --preset growth
+uv run python .../run_screen.py --region japan --preset growth
 
 # 米国の純成長株
-python3 .../run_screen.py --region us --preset growth
+uv run python .../run_screen.py --region us --preset growth
 
 # 日本の高還元株
-python3 .../run_screen.py --region japan --preset shareholder-return
+uv run python .../run_screen.py --region japan --preset shareholder-return
 
 # 米国の高還元株
-python3 .../run_screen.py --region us --preset shareholder-return
+uv run python .../run_screen.py --region us --preset shareholder-return
 
 # 米国の高成長株（利益不問・PSR基準）
-python3 .../run_screen.py --region us --preset high-growth
+uv run python .../run_screen.py --region us --preset high-growth
 
 # 日本の高成長株
-python3 .../run_screen.py --region japan --preset high-growth
+uv run python .../run_screen.py --region japan --preset high-growth
 
 # AI関連の割安株（米国）
-python3 .../run_screen.py --region us --preset value --theme ai
+uv run python .../run_screen.py --region us --preset value --theme ai
 
 # 半導体の高成長株（米国）
-python3 .../run_screen.py --region us --preset high-growth --theme ai
+uv run python .../run_screen.py --region us --preset high-growth --theme ai
 
 # 防衛関連株（米国・割安）
-python3 .../run_screen.py --region us --preset value --theme defense
+uv run python .../run_screen.py --region us --preset value --theme defense
 
 # EV関連の成長株（米国）
-python3 .../run_screen.py --region us --preset growth --theme ev
+uv run python .../run_screen.py --region us --preset growth --theme ev
 
 # バイオテックの高成長株
-python3 .../run_screen.py --region us --preset high-growth --theme biotech
+uv run python .../run_screen.py --region us --preset high-growth --theme biotech
 
 # 日本の小型急成長株（時価総額1000億以下）
-python3 .../run_screen.py --region japan --preset small-cap-growth
+uv run python .../run_screen.py --region japan --preset small-cap-growth
 
 # 米国の小型急成長株（時価総額$1B以下に自動調整）
-python3 .../run_screen.py --region us --preset small-cap-growth
+uv run python .../run_screen.py --region us --preset small-cap-growth
 
 # AI関連の小型成長株
-python3 .../run_screen.py --region us --preset small-cap-growth --theme ai
+uv run python .../run_screen.py --region us --preset small-cap-growth --theme ai
 
 # 日本の逆張り候補（売られすぎ × ファンダ堅調）
-python3 .../run_screen.py --region japan --preset contrarian
+uv run python .../run_screen.py --region japan --preset contrarian
 
 # 米国の逆張り候補
-python3 .../run_screen.py --region us --preset contrarian
+uv run python .../run_screen.py --region us --preset contrarian
 
 # テクノロジーセクターの逆張り候補
-python3 .../run_screen.py --region japan --preset contrarian --sector Technology
+uv run python .../run_screen.py --region japan --preset contrarian --sector Technology
 
 # 日本の急騰・モメンタム銘柄（安定加速のみ、デフォルト）
-python3 .claude/skills/screen-stocks/scripts/run_screen.py --preset momentum --region japan --top 10
+uv run python .claude/skills/screen-stocks/scripts/run_screen.py --preset momentum --region japan --top 10
 
 # 米国の急騰銘柄を含むモメンタムスクリーニング（急騰・過熱も含む）
-python3 .claude/skills/screen-stocks/scripts/run_screen.py --preset momentum --region us --top 5 --submode surge
+uv run python .claude/skills/screen-stocks/scripts/run_screen.py --preset momentum --region us --top 5 --submode surge
 
 # テクノロジーセクターのモメンタム銘柄
-python3 .../run_screen.py --region japan --preset momentum --sector Technology
+uv run python .../run_screen.py --region japan --preset momentum --sector Technology
 ```
 
 ## アノテーション機能 (KIK-418/419)

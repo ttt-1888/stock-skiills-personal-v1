@@ -57,7 +57,7 @@ StressTest, Forecast, ActionItem, Community, ThemeTrend
 ## コンテキスト取得コマンド
 
 ```bash
-python3 scripts/get_context.py "<ユーザー入力>"
+uv run python scripts/get_context.py "<ユーザー入力>"
 ```
 
 ## コンテキストの使い方
@@ -225,7 +225,7 @@ CONTEXT_RECENT_HOURS=168    # これ以内 → RECENT / これ超 → STALE
 ### CLI ラッパー（手動実行用）
 
 ```bash
-python3 scripts/suggest.py [--symbol <ticker>] [--sector <sector>]
+uv run python scripts/suggest.py [--symbol <ticker>] [--sector <sector>]
 ```
 
 - 提案は最大 3 件。urgency: high（赤信号） > medium（要確認） > low（参考）

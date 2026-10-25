@@ -2,7 +2,7 @@
 name: stock-report
 description: 個別銘柄・ETFの詳細レポート。ティッカーシンボルを指定して財務分析レポートを生成する。個別株はバリュエーション・割安度判定・株主還元率を表示。ETFは経費率・AUM・ファンド規模を自動評価。
 argument-hint: "[ticker]  例: 7203.T, AAPL, D05.SI"
-allowed-tools: Bash(python3 *)
+allowed-tools: Bash(uv run python *)
 ---
 
 # 個別銘柄レポートスキル
@@ -10,7 +10,7 @@ allowed-tools: Bash(python3 *)
 $ARGUMENTS からティッカーシンボルを取り出し、以下のコマンドを実行してください。
 
 ```bash
-python3 /Users/kikuchihiroyuki/stock-skills/.claude/skills/stock-report/scripts/generate_report.py $ARGUMENTS
+uv run python .claude/skills/stock-report/scripts/generate_report.py $ARGUMENTS
 ```
 
 ## 出力内容

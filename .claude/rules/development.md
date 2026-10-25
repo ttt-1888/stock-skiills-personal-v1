@@ -2,8 +2,9 @@
 
 ## 言語・依存
 
-- Python 3.10+
-- 主要依存: yfinance, pyyaml, numpy, pandas, pytest
+- Python 3.10+。依存関係は `pyproject.toml`、固定バージョンは `uv.lock` で管理する
+- セットアップ: `uv sync`。依存追加は `uv add <package>`、開発依存は `uv add --dev <package>`
+- 主要依存: yfinance, pyyaml, numpy, pandas, requests, python-dotenv, networkx。テストに pytest を使用
 - Grok API 利用時は `XAI_API_KEY` 環境変数を設定（未設定でも動作する）
 - Neo4j 書き込み深度は `NEO4J_MODE` 環境変数で制御: `off`/`summary`/`full`（デフォルト: 接続可能なら `full`）(KIK-413)
 - TEI ベクトル検索は `TEI_URL` 環境変数で制御（デフォルト: `http://localhost:8081`）。未起動時はベクトル検索スキップ (KIK-420)
@@ -24,7 +25,7 @@
 
 ## テスト
 
-- `python3 -m pytest tests/ -q` で全テスト実行（約3287テスト、~20秒）
+- `uv run python -m pytest tests/ -q` で全テスト実行（約3291テスト、~20秒）
 - `tests/conftest.py` に共通フィクスチャ: `stock_info_data`, `stock_detail_data`, `price_history_df`, `mock_yahoo_client`
 - `tests/conftest.py` に autouse `_block_external_io` フィクスチャ: Neo4j/TEI/Grok を全テストで自動モック（KIK-529）。`@pytest.mark.no_auto_mock` でオプトアウト可
 - `tests/fixtures/` に JSON/CSV テストデータ（Toyota 7203.T ベース）
@@ -75,8 +76,8 @@
 | `data-models-verify` | `docs/data-models.md` | fixture との整合性検証（手動維持、不一致で警告） |
 
 ```bash
-python3 scripts/generate_docs.py all           # 全ターゲット実行
-python3 scripts/generate_docs.py check --quiet  # 陳腐化チェック（hook 用）
+uv run python scripts/generate_docs.py all           # 全ターゲット実行
+uv run python scripts/generate_docs.py check --quiet  # 陳腐化チェック（hook 用）
 ```
 
 **自動化レイヤー:**

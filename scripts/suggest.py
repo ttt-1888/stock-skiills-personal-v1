@@ -2,10 +2,10 @@
 """Proactive action suggestions based on accumulated knowledge graph (KIK-435).
 
 Usage:
-    python3 scripts/suggest.py
-    python3 scripts/suggest.py --symbol 7203.T
-    python3 scripts/suggest.py --sector Technology
-    python3 scripts/suggest.py --symbol AAPL --sector Technology
+    uv run python scripts/suggest.py
+    uv run python scripts/suggest.py --symbol 7203.T
+    uv run python scripts/suggest.py --sector Technology
+    uv run python scripts/suggest.py --symbol AAPL --sector Technology
 """
 
 import argparse

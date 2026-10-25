@@ -2,8 +2,8 @@
 """Initialize Neo4j knowledge graph and import existing history (KIK-397/398/420).
 
 Usage:
-    python3 scripts/init_graph.py [--history-dir data/history] [--notes-dir data/notes]
-    python3 scripts/init_graph.py --rebuild   # full wipe + reimport (with embeddings if TEI available)
+    uv run python scripts/init_graph.py [--history-dir data/history] [--notes-dir data/notes]
+    uv run python scripts/init_graph.py --rebuild   # full wipe + reimport (with embeddings if TEI available)
 
 This script:
 1. Creates schema constraints and indexes (including vector indexes, KIK-420)

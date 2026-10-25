@@ -2,7 +2,7 @@
 name: investment-note
 description: 投資メモの管理。投資テーゼ・懸念・学びなどをノートとして記録・参照・削除。
 argument-hint: "[save|list|delete] [--symbol SYMBOL] [--category CATEGORY] [--type TYPE] [--content TEXT] [--id NOTE_ID]"
-allowed-tools: Bash(python3 *)
+allowed-tools: Bash(uv run python *)
 ---
 
 # 投資メモ管理スキル
@@ -12,7 +12,7 @@ $ARGUMENTS を解析し、以下のコマンドを実行してください。
 ## 実行コマンド
 
 ```bash
-python3 /Users/kikuchihiroyuki/stock-skills/.claude/skills/investment-note/scripts/manage_note.py $ARGUMENTS
+uv run python .claude/skills/investment-note/scripts/manage_note.py $ARGUMENTS
 ```
 
 結果をそのまま表示してください。
@@ -23,33 +23,33 @@ python3 /Users/kikuchihiroyuki/stock-skills/.claude/skills/investment-note/scrip
 
 ```bash
 # 銘柄メモ（従来通り）
-python3 .../manage_note.py save --symbol 7203.T --type thesis --content "EV普及で部品需要増"
+uv run python .../manage_note.py save --symbol 7203.T --type thesis --content "EV普及で部品需要増"
 
 # PF全体メモ（KIK-429: symbolオプション化）
-python3 .../manage_note.py save --category portfolio --type review --content "セクター偏重を改善"
+uv run python .../manage_note.py save --category portfolio --type review --content "セクター偏重を改善"
 
 # 市況メモ
-python3 .../manage_note.py save --category market --type observation --content "日銀利上げ観測"
+uv run python .../manage_note.py save --category market --type observation --content "日銀利上げ観測"
 ```
 
 `--symbol` と `--category` のいずれかは必須（`journal` タイプを除く）。`--symbol` 指定時はカテゴリは自動で `stock`。
 
 ```bash
 # 投資日記 / フリーメモ（KIK-473: symbol/category 不要）
-python3 .../manage_note.py save --type journal --content "NVDAが急騰。AI需要の強さを感じた"
+uv run python .../manage_note.py save --type journal --content "NVDAが急騰。AI需要の強さを感じた"
 # → 本文中のティッカーシンボル（NVDA）を自動検出し Neo4j に紐付け
 ```
 
 ### list -- メモ一覧
 
 ```bash
-python3 .../manage_note.py list [--symbol 7203.T] [--type concern] [--category portfolio]
+uv run python .../manage_note.py list [--symbol 7203.T] [--type concern] [--category portfolio]
 ```
 
 ### delete -- メモ削除
 
 ```bash
-python3 .../manage_note.py delete --id note_2025-02-17_7203_T_abc12345
+uv run python .../manage_note.py delete --id note_2025-02-17_7203_T_abc12345
 ```
 
 ## ノートタイプ
