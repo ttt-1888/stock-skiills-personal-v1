@@ -174,7 +174,7 @@ def main():
 
     print("Checking Neo4j connection...")
     if not is_available():
-        print("ERROR: Neo4j is not reachable. Start with: docker compose up -d")
+        print("ERROR: Neo4j is not reachable. Start Neo4j separately and configure NEO4J_URI, NEO4J_USER, and NEO4J_PASSWORD.")
         sys.exit(1)
 
     try:
