@@ -13,9 +13,9 @@ Centralised threshold loader (KIK-446).
 
 ### src.core.action_item_bridge
 
-Action item bridge: detect -> dedup -> Linear create -> Neo4j save (KIK-472).
+Action item bridge: detect -> dedup -> Neo4j save (KIK-472).
 
-- `process_action_items(suggestions: list[dict], health_data: dict | None=None, context: dict | None=None, *, graph_writer: GraphWriter | None=None) -> list[dict]` — Full pipeline: detect -> dedup -> create Linear issues -> save Neo4j.
+- `process_action_items(suggestions: list[dict], health_data: dict | None=None, context: dict | None=None, *, graph_writer: GraphWriter | None=None) -> list[dict]` — Detect action items, deduplicate them, and save new items to Neo4j.
 
 ### src.core.action_item_detector
 
@@ -379,7 +379,6 @@ Read-only access to the investment knowledge graph.
 Write operations for the investment knowledge graph.
 
 - `merge_action_item(*, action_id: str, action_date: str, trigger_type: str, title: str, symbol: str, urgency: str, source_node_id: str | None=None) -> bool` — Create or update an ActionItem node. Returns True on success.
-- `update_action_item_linear(*, action_id: str, linear_issue_id: str, linear_issue_url: str, linear_identifier: str) -> None` — Link an ActionItem node to its Linear issue.
 
 ### src.core.ports.market_data
 
@@ -969,8 +968,7 @@ MarketContext node operations (KIK-507).
 Note and ActionItem node operations (KIK-507).
 
 - `merge_note(note_id: str, note_date: str, note_type: str, content: str, symbol: Optional[str]=None, source: str='', category: str='', semantic_summary: str='', embedding: list[float] | None=None) -> bool` — Create a Note node and ABOUT relationship (KIK-491).
-- `merge_action_item(action_id: str, action_date: str, trigger_type: str, title: str, symbol: str | None=None, urgency: str='medium', linear_issue_id: str | None=None, linear_issue_url: str | None=None, linear_identifier: str | None=None, source_node_id: str | None=None) -> bool` — Create/update ActionItem node + TARGETS->Stock + optional source relationship.
-- `update_action_item_linear(action_id: str, linear_issue_id: str, linear_issue_url: str, linear_identifier: str) -> bool` — Link ActionItem to Linear issue after creation.
+- `merge_action_item(action_id: str, action_date: str, trigger_type: str, title: str, symbol: str | None=None, urgency: str='medium', source_node_id: str | None=None) -> bool` — Create/update ActionItem node + TARGETS->Stock + optional source relationship.
 - `get_open_action_items(symbol: str | None=None) -> list[dict]` — Query open ActionItem nodes for dedup check.
 
 ### src.data.graph_store.portfolio
@@ -1118,15 +1116,6 @@ Unified lesson conflict detection engine (KIK-570).
 - `embedding_similarity(text_a: str, text_b: str) -> Optional[float]` — Compute cosine similarity via TEI embeddings. Returns None if unavailable.
 - `find_conflicts(new_lesson: dict, existing_lessons: list[dict], similarity_threshold: float=0.5, max_results: int=5) -> list[dict]` — Detect conflicts between a new lesson and existing lessons.
 - `find_conflict_pairs(lessons: list[dict]) -> dict[str, str]` — Find lesson IDs with potential contradictions.
-
-### src.data.linear_client
-
-Linear API client for action item management (KIK-472).
-
-- `is_available() -> bool` — Check if Linear integration is enabled and configured.
-- `create_issue(title: str, description: str='', priority: int=3, labels: list[str] | None=None) -> Optional[dict]` — Create a Linear issue via GraphQL mutation.
-- `find_issue_by_title(title_prefix: str) -> Optional[dict]` — Search for an existing issue by title prefix (dedup check).
-- `update_issue(issue_id: str, state: str | None=None) -> bool` — Update a Linear issue state.
 
 ### src.data.note_manager
 

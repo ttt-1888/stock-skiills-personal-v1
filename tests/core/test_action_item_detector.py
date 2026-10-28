@@ -22,7 +22,6 @@ class TestDetectFromSuggestions:
         items = detect_action_items(suggestions)
         assert len(items) == 1
         assert items[0]["trigger_type"] == "exit"
-        assert items[0]["priority"] == 2
         assert "売却検討" in items[0]["title"]
 
     def test_detect_earnings_suggestion(self):
@@ -38,7 +37,6 @@ class TestDetectFromSuggestions:
         items = detect_action_items(suggestions)
         assert len(items) == 1
         assert items[0]["trigger_type"] == "earnings"
-        assert items[0]["priority"] == 2
 
     def test_detect_thesis_review(self):
         suggestions = [
@@ -53,7 +51,6 @@ class TestDetectFromSuggestions:
         items = detect_action_items(suggestions)
         assert len(items) == 1
         assert items[0]["trigger_type"] == "thesis_review"
-        assert items[0]["priority"] == 3
         assert items[0]["symbol"] == "7203.T"
 
     def test_detect_concern_suggestion(self):

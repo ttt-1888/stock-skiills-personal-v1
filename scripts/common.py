@@ -198,22 +198,9 @@ def _process_action_items(
         lines = ["\n---", "📌 **アクションアイテム** (自動検出)\n"]
         for r in results:
             title = r.get("title", "")
-            symbol = r.get("symbol", "")
-            linear = r.get("linear_issue")
             neo4j = r.get("neo4j_saved", False)
 
-            status_parts = []
-            if neo4j:
-                status_parts.append("Neo4j保存済")
-            if linear:
-                ident = linear.get("identifier", "")
-                url = linear.get("url", "")
-                if ident and url:
-                    status_parts.append(f"Linear: [{ident}]({url})")
-                elif ident:
-                    status_parts.append(f"Linear: {ident}")
-
-            status = " / ".join(status_parts) if status_parts else "検出済"
+            status = "Neo4j保存済" if neo4j else "検出済"
             lines.append(f"- {title} ({status})")
 
         print("\n".join(lines))

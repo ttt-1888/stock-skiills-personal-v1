@@ -117,17 +117,6 @@ class _MockGraphWriter:
     ) -> bool:
         return True
 
-    def update_action_item_linear(
-        self,
-        *,
-        action_id: str,
-        linear_issue_id: str,
-        linear_issue_url: str,
-        linear_identifier: str,
-    ) -> None:
-        pass
-
-
 class _MockResearchClient:
     """Minimal concrete implementation of ResearchClient Protocol."""
 
@@ -286,8 +275,7 @@ class TestActionItemBridgeInjection:
 
         writer = _TrackingWriter()
 
-        with patch("src.core.action_item_bridge._create_linear_issue", return_value=None):
-            results = process_action_items(self._exit_suggestions(), graph_writer=writer)
+        results = process_action_items(self._exit_suggestions(), graph_writer=writer)
 
         assert len(results) == 1
         assert results[0]["neo4j_saved"] is True
@@ -308,8 +296,7 @@ class TestActionItemBridgeInjection:
                 generated_ids.append(action_id)
                 return True
 
-        with patch("src.core.action_item_bridge._create_linear_issue", return_value=None):
-            process_action_items(self._exit_suggestions(), graph_writer=_CaptureWriter())
+        process_action_items(self._exit_suggestions(), graph_writer=_CaptureWriter())
 
         assert generated_ids, "Expected at least one action item to be created"
         the_action_id = generated_ids[0]
@@ -327,8 +314,7 @@ class TestActionItemBridgeInjection:
 
         writer = _DuplicateWriter()
 
-        with patch("src.core.action_item_bridge._create_linear_issue", return_value=None):
-            results = process_action_items(self._exit_suggestions(), graph_writer=writer)
+        results = process_action_items(self._exit_suggestions(), graph_writer=writer)
 
         # Result should be empty (dedup skipped the item) and merge should not be called
         assert len(results) == 0
@@ -341,40 +327,11 @@ class TestActionItemBridgeInjection:
         with (
             patch("src.core.action_item_bridge._is_duplicate_neo4j", return_value=False),
             patch("src.core.action_item_bridge._save_to_neo4j", return_value=True),
-            patch("src.core.action_item_bridge._create_linear_issue", return_value=None),
-            patch("src.core.action_item_bridge._link_linear_to_neo4j"),
         ):
             results = process_action_items(self._exit_suggestions())
 
         assert len(results) == 1
         assert results[0]["neo4j_saved"] is True
-
-    def test_process_with_graph_writer_links_linear(self):
-        """process_action_items calls graph_writer.update_action_item_linear() after issue creation."""
-        from src.core.action_item_bridge import process_action_items
-
-        linked = {}
-
-        class _LinkWriter(_MockGraphWriter):
-            def get_open_action_items(self) -> list[dict]:
-                return []
-
-            def update_action_item_linear(self, *, action_id, linear_issue_id,
-                                           linear_issue_url, linear_identifier):
-                linked["action_id"] = action_id
-                linked["url"] = linear_issue_url
-
-        writer = _LinkWriter()
-        linear_result = {"id": "issue-1", "identifier": "KIK-999", "url": "https://linear.app/KIK-999"}
-
-        with patch("src.core.action_item_bridge._create_linear_issue", return_value=linear_result):
-            results = process_action_items(self._exit_suggestions(), graph_writer=writer)
-
-        assert len(results) == 1
-        assert results[0]["linear_issue"] is not None
-        assert "action_id" in linked
-        assert linked["url"] == "https://linear.app/KIK-999"
-
 
 # ---------------------------------------------------------------------------
 # 5. researcher.py accepts research_client injection

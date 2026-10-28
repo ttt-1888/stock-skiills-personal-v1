@@ -56,7 +56,7 @@ uv add --dev <package>
 ```
 Skills (.claude/skills/*/SKILL.md → scripts/*.py) — 9スキル
 Core   (src/core/) — health/, portfolio/, ports/, research/, risk/, screening/, action_item_bridge, action_item_detector, common, health_check, health_etf, health_labels, market_dashboard, models, proactive_engine, return_estimate, ticker_utils, value_trap
-Data   (src/data/) — context/, graph_query/, graph_store/, grok_client/, history/, yahoo_client/, embedding_client, lesson_community, lesson_conflict, linear_client, note_manager, user_profile
+Data   (src/data/) — context/, graph_query/, graph_store/, grok_client/, history/, yahoo_client/, embedding_client, lesson_community, lesson_conflict, note_manager, user_profile
 Output (src/output/) — adjust_formatter, analyze_formatter, forecast_formatter, formatter, health_formatter, portfolio_formatter, rebalance_formatter, research_formatter, review_formatter, screening_summary_formatter, simulate_formatter, stress_formatter
 
 Config: config/screening_presets.yaml (16 presets), config/exchanges.yaml (60+ regions)

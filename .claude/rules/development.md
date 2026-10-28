@@ -9,7 +9,6 @@
 - Neo4j 書き込み深度は `NEO4J_MODE` 環境変数で制御: `off`/`summary`/`full`（デフォルト: 接続可能なら `full`）(KIK-413)
 - TEI ベクトル検索は `TEI_URL` 環境変数で制御（デフォルト: `http://localhost:8081`）。未起動時はベクトル検索スキップ (KIK-420)
 - コンテキスト鮮度閾値は `CONTEXT_FRESH_HOURS`（デフォルト: 24）/ `CONTEXT_RECENT_HOURS`（デフォルト: 168）で制御 (KIK-427)
-- Linear 連携は `LINEAR_ENABLED=on` で有効化（デフォルト: off）。`LINEAR_API_KEY`（APIトークン）、`LINEAR_TEAM_ID`（issue作成先チームID）、`LINEAR_PROJECT_ID`（任意、プロジェクトID）を設定 (KIK-472)
 
 ## コーディング規約
 
@@ -25,7 +24,7 @@
 
 ## テスト
 
-- `uv run python -m pytest tests/ -q` で全テスト実行（約3292テスト、~20秒）
+- `uv run python -m pytest tests/ -q` で全テスト実行（約3276テスト、~20秒）
 - `tests/conftest.py` に共通フィクスチャ: `stock_info_data`, `stock_detail_data`, `price_history_df`, `mock_yahoo_client`
 - `tests/conftest.py` に autouse `_block_external_io` フィクスチャ: Neo4j/TEI/Grok を全テストで自動モック（KIK-529）。`@pytest.mark.no_auto_mock` でオプトアウト可
 - `tests/fixtures/` に JSON/CSV テストデータ（Toyota 7203.T ベース）
