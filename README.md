@@ -10,6 +10,23 @@ uv sync
 
 Python 3.10+ と uv が必要です。依存関係は `pyproject.toml` で管理し、`uv.lock` で固定します。
 
+### 証明書ストアのセキュリティ更新
+
+Python の `requests` などが使う CA 証明書バンドルは `certifi` です。更新をロックファイルで管理できるよう、`certifi` は直接依存として登録しています。証明書関連の緊急更新時は次を実行してください。
+
+```bash
+uv lock --upgrade-package certifi
+uv sync
+```
+
+`pip` を使う環境では、pip 自体と certifi も更新します。uv で作成した Windows 環境の場合:
+
+```powershell
+uv pip install --python .venv\Scripts\python.exe --upgrade pip certifi
+```
+
+macOS/Linux の場合は `--python .venv/bin/python` を指定します。pip で直接管理している環境では `python -m pip install --upgrade pip certifi` を使ってください。uv 管理の環境では、プロジェクト依存の更新と同期を優先してください。
+
 ### 環境変数
 
 ```bash
