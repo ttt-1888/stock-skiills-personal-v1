@@ -52,6 +52,13 @@ class TestConnection:
         with patch("src.data.graph_store._get_driver", return_value=None):
             assert gs.is_available() is False
 
+    def test_get_driver_requires_password(self, monkeypatch):
+        from src.data.graph_store import _common
+
+        monkeypatch.setattr(_common, "_driver", None)
+        monkeypatch.setattr(_common, "_NEO4J_PASSWORD", None)
+        assert _common._get_driver() is None
+
     def test_is_available_success(self, gs_with_driver):
         gs, driver, _ = gs_with_driver
         driver.verify_connectivity.return_value = None

@@ -16,10 +16,10 @@ Python 3.10+ と uv が必要です。依存関係は `pyproject.toml` で管理
 # Grok API（Xセンチメント分析、任意）
 export XAI_API_KEY=xai-xxxxxxxxxxxxx
 
-# Neo4j 書き込み深度（off/summary/full、デフォルト: full）
+# Neo4j 書き込み深度（off/summary/full、Neo4jを使う場合のみ）
 export NEO4J_MODE=full
 
-# TEI ベクトル検索エンドポイント（デフォルト: http://localhost:8081）
+# TEI ベクトル検索エンドポイント（任意。サービスは別途用意）
 export TEI_URL=http://localhost:8081
 
 # コンテキスト鮮度閾値（時間単位、予定: KIK-427）
@@ -169,15 +169,14 @@ Core (src/core/)
 
 スキル実行履歴を Neo4j に蓄積し、過去の分析・取引・リサーチを横断検索できる。
 
-```bash
-# Docker で Neo4j を起動
-docker compose up -d
+Neo4j はこのリポジトリでは起動しない。利用する場合は Neo4j を別途用意し、`NEO4J_URI`、`NEO4J_USER`、`NEO4J_PASSWORD` を設定する。パスワードに既定値はない。
 
+```bash
 # スキーマ初期化 + 既存データインポート
 uv run python scripts/init_graph.py --rebuild
 ```
 
-Neo4j 未接続でも全スキルが正常動作する（graceful degradation）。
+Neo4j 未接続でも全スキルが正常動作する（graceful degradation）。TEI ベクトル検索を利用する場合も、TEI サービスを別途用意して `TEI_URL` を設定する。
 
 ## テスト
 

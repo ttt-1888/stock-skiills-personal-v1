@@ -19,7 +19,7 @@ from typing import Optional
 
 _NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7688")
 _NEO4J_USER = os.environ.get("NEO4J_USER", "neo4j")
-_NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "password")
+_NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD")
 
 _driver = None
 _unavailable_warned = False  # KIK-443: warn once on connection failure
@@ -58,10 +58,12 @@ def get_mode() -> str:
 
 
 def _get_driver():
-    """Lazy-init Neo4j driver. Returns None if neo4j package not installed."""
+    """Lazy-init Neo4j driver. Returns None if credentials or package are missing."""
     global _driver
     if _driver is not None:
         return _driver
+    if not _NEO4J_PASSWORD:
+        return None
     try:
         from neo4j import GraphDatabase
         _driver = GraphDatabase.driver(_NEO4J_URI, auth=(_NEO4J_USER, _NEO4J_PASSWORD))
@@ -78,8 +80,8 @@ def is_available() -> bool:
         if not _unavailable_warned:
             print(
                 "⚠️  Neo4jに接続できません\n"
-                "    原因: Dockerコンテナが起動していない可能性があります\n"
-                "    対処: docker compose up -d を実行してください\n"
+                "    原因: Neo4jが停止中、または接続設定がありません\n"
+                "    対処: 利用する場合はNeo4jを別途起動し、NEO4J_URI/NEO4J_USER/NEO4J_PASSWORDを設定してください\n"
                 "    → Neo4jなしで続行します（コンテキストなし）",
                 file=sys.stderr,
             )
@@ -93,8 +95,8 @@ def is_available() -> bool:
         if not _unavailable_warned:
             print(
                 "⚠️  Neo4jに接続できません\n"
-                "    原因: Dockerコンテナが起動していない可能性があります\n"
-                "    対処: docker compose up -d を実行してください\n"
+                "    原因: Neo4jが停止中、到達不能、または認証情報が不正です\n"
+                "    対処: Neo4jの起動状態とNEO4J_URI/NEO4J_USER/NEO4J_PASSWORDを確認してください\n"
                 "    → Neo4jなしで続行します（コンテキストなし）",
                 file=sys.stderr,
             )
