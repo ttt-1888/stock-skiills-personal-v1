@@ -291,21 +291,6 @@
 | 損切りライン、利確ライン、ストップロス、テイクプロフィット、exit基準 | exit-rule |
 | 日記、ジャーナル、振り返り日記、フリーメモ、雑感、つぶやき | journal |
 
-**KIK-503: target メモ保存後の Linear issue 登録促し**:
-
-`/investment-note save --type target` 実行後、末尾に以下の促しメッセージを表示する:
-
-> 📋 この予定を Linear issue にも登録しますか？（Investment Checkpoints プロジェクト）
-
-- ユーザーが「はい」「登録して」→ MCP (`mcp__claude_ai_Linear__create_issue`) で issue 作成
-  - team: `Kikuchi`
-  - project: `Investment Checkpoints`
-  - title: メモ内容から要約（例: 「7203.T 購入検討 - 目標株価 3000円」）
-  - description: メモの全文
-  - priority: 3 (Normal)
-- ユーザーが「不要」「スキップ」→ 何もしない
-- **対象は `target` タイプのみ**。thesis/concern/review/lesson/journal/observation では促さない
-
 ### 知識ドメイン → `/graph-query`
 
 ```
@@ -405,10 +390,10 @@
 2. `src/core/` のモジュール一覧と、各スキルからの利用状況を照合
 3. テストカバレッジの薄い箇所を特定
 4. intent-routing のキーワード漏れを検出
-5. Linear の未完了 issue を確認
+5. GitHub の未完了 issue を確認
 6. 改善提案をカテゴリ（新機能/UX改善/バグ修正/ドキュメント）× 優先度（High/Medium/Low）で整理
 
-提案に同意があれば Linear issue を作成する。
+提案に同意があれば、内容を確認してから GitHub issue を作成する。投資メモや個人情報を issue に含めない。
 
 ---
 

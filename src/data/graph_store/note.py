@@ -1,7 +1,6 @@
 """Note and ActionItem node operations (KIK-507).
 
-Handles merge_note, merge_action_item, update_action_item_linear,
-get_open_action_items.
+Handles merge_note, merge_action_item, and get_open_action_items.
 """
 
 from typing import Optional
@@ -80,9 +79,6 @@ def merge_action_item(
     title: str,
     symbol: str | None = None,
     urgency: str = "medium",
-    linear_issue_id: str | None = None,
-    linear_issue_url: str | None = None,
-    linear_identifier: str | None = None,
     source_node_id: str | None = None,
 ) -> bool:
     """Create/update ActionItem node + TARGETS->Stock + optional source relationship."""
@@ -97,16 +93,10 @@ def merge_action_item(
                 "MERGE (a:ActionItem {id: $id}) "
                 "SET a.date = $date, a.trigger_type = $trigger_type, "
                 "a.title = $title, a.symbol = $symbol, "
-                "a.urgency = $urgency, a.status = coalesce(a.status, 'open'), "
-                "a.linear_issue_id = $linear_id, "
-                "a.linear_issue_url = $linear_url, "
-                "a.linear_identifier = $linear_ident",
+                "a.urgency = $urgency, a.status = coalesce(a.status, 'open')",
                 id=action_id, date=action_date,
                 trigger_type=trigger_type, title=title,
                 symbol=symbol or "", urgency=urgency,
-                linear_id=linear_issue_id or "",
-                linear_url=linear_issue_url or "",
-                linear_ident=linear_identifier or "",
             )
             if symbol:
                 session.run(
@@ -122,35 +112,6 @@ def merge_action_item(
                     "MERGE (src)-[:TRIGGERED]->(a)",
                     action_id=action_id, source_id=source_node_id,
                 )
-        return True
-    except Exception:
-        return False
-
-
-def update_action_item_linear(
-    action_id: str,
-    linear_issue_id: str,
-    linear_issue_url: str,
-    linear_identifier: str,
-) -> bool:
-    """Link ActionItem to Linear issue after creation."""
-    if _common._get_mode() == "off":
-        return False
-    driver = _common._get_driver()
-    if driver is None:
-        return False
-    try:
-        with driver.session() as session:
-            session.run(
-                "MATCH (a:ActionItem {id: $id}) "
-                "SET a.linear_issue_id = $lid, "
-                "a.linear_issue_url = $lurl, "
-                "a.linear_identifier = $lident",
-                id=action_id,
-                lid=linear_issue_id,
-                lurl=linear_issue_url,
-                lident=linear_identifier,
-            )
         return True
     except Exception:
         return False

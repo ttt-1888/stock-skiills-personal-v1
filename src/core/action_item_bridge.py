@@ -1,4 +1,4 @@
-"""Action item bridge: detect -> dedup -> Linear create -> Neo4j save (KIK-472).
+"""Action item bridge: detect -> dedup -> Neo4j save (KIK-472).
 
 Orchestrates the full action item pipeline. Graceful degradation on any failure.
 
@@ -23,7 +23,7 @@ def process_action_items(
     *,
     graph_writer: GraphWriter | None = None,
 ) -> list[dict]:
-    """Full pipeline: detect -> dedup -> create Linear issues -> save Neo4j.
+    """Detect action items, deduplicate them, and save new items to Neo4j.
 
     Args:
         suggestions: Output from proactive_engine.get_suggestions().
@@ -34,7 +34,7 @@ def process_action_items(
 
     Returns:
         List of created action items with results:
-        [{action_id, title, symbol, linear_issue, neo4j_saved}]
+        [{action_id, title, symbol, neo4j_saved}]
     """
     try:
         from src.core.action_item_detector import detect_action_items
@@ -65,14 +65,11 @@ def process_action_items(
             symbol = item.get("symbol", "")
             trigger_type = item.get("trigger_type", "")
             urgency = item.get("urgency", "medium")
-            priority = item.get("priority", 3)
-            description = item.get("description", "")
 
             result_entry: dict = {
                 "action_id": action_id,
                 "title": title,
                 "symbol": symbol,
-                "linear_issue": None,
                 "neo4j_saved": False,
             }
 
@@ -92,18 +89,6 @@ def process_action_items(
                 graph_writer=graph_writer,
             )
             result_entry["neo4j_saved"] = neo4j_saved
-
-            # 3. Create Linear issue (if enabled)
-            linear_result = _create_linear_issue(
-                action_id=action_id,
-                title=title,
-                description=description,
-                priority=priority,
-            )
-            if linear_result:
-                result_entry["linear_issue"] = linear_result
-                # 4. Link Linear issue ID back to Neo4j node
-                _link_linear_to_neo4j(action_id, linear_result, graph_writer=graph_writer)
 
             results.append(result_entry)
         except Exception:
@@ -164,50 +149,3 @@ def _save_to_neo4j(
         )
     except Exception:
         return False
-
-
-def _create_linear_issue(
-    action_id: str,
-    title: str,
-    description: str,
-    priority: int,
-) -> dict | None:
-    """Create Linear issue if enabled."""
-    try:
-        from src.data.linear_client import create_issue, is_available
-        if not is_available():
-            return None
-        return create_issue(
-            title=title,
-            description=f"{description}\n\n---\nAction ID: `{action_id}`",
-            priority=priority,
-        )
-    except Exception:
-        return None
-
-
-def _link_linear_to_neo4j(
-    action_id: str,
-    linear_result: dict,
-    *,
-    graph_writer: GraphWriter | None = None,
-) -> None:
-    """Link Linear issue back to the Neo4j ActionItem node."""
-    try:
-        if graph_writer is not None:
-            graph_writer.update_action_item_linear(
-                action_id=action_id,
-                linear_issue_id=linear_result.get("id", ""),
-                linear_issue_url=linear_result.get("url", ""),
-                linear_identifier=linear_result.get("identifier", ""),
-            )
-            return
-        from src.data.graph_store import update_action_item_linear
-        update_action_item_linear(
-            action_id=action_id,
-            linear_issue_id=linear_result.get("id", ""),
-            linear_issue_url=linear_result.get("url", ""),
-            linear_identifier=linear_result.get("identifier", ""),
-        )
-    except Exception:
-        pass

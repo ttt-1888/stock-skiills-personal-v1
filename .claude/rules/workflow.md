@@ -11,7 +11,7 @@
 ## 1. Worktree 作成
 
 ```bash
-# Linear issue KIK-NNN に対して
+# GitHub issue #NNN に対して
 git worktree add -b feature/kik-{NNN}-{short-desc} ~/stock-skills-kik{NNN} main
 ```
 
@@ -169,4 +169,4 @@ git worktree remove ~/stock-skills-kik{NNN}
 git branch -d feature/kik-{NNN}-{short-desc}
 ```
 
-- Linear issue を Done に更新する
+- Pull request merge 時に対応する GitHub issue をクローズする

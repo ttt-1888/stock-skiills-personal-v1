@@ -231,7 +231,7 @@ stock/business: positive/negative。industry: trend/growth_driver/risk/regulator
 | symbol_count | int | 対象銘柄数 |
 
 ### ActionItem (KIK-472)
-アクションアイテム（プロアクティブ提案から自動検出）。TARGETS リレーションで対象銘柄に接続。Linear issue と紐付け可能。
+アクションアイテム（プロアクティブ提案から自動検出）。TARGETS リレーションで対象銘柄に接続。
 
 | Property | Type | Description |
 |:---|:---|:---|
@@ -242,9 +242,6 @@ stock/business: positive/negative。industry: trend/growth_driver/risk/regulator
 | symbol | string | 対象銘柄シンボル |
 | urgency | string | 緊急度 (high/medium/low) |
 | status | string | ステータス (open/done) |
-| linear_issue_id | string | Linear issue ID |
-| linear_issue_url | string | Linear issue URL |
-| linear_identifier | string | Linear issue 識別子 (e.g. KIK-999) |
 
 ### Community (KIK-547)
 銘柄クラスタ。共起シグナル（Screen/Theme/Sector/News）に基づく類似銘柄グループ。

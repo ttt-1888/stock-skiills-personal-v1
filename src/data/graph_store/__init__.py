@@ -80,7 +80,6 @@ from src.data.graph_store.note import (  # noqa: F401
     get_open_action_items,
     merge_action_item,
     merge_note,
-    update_action_item_linear,
 )
 
 # --- linker.py: AI-driven knowledge graph linking (KIK-434, KIK-517) ---

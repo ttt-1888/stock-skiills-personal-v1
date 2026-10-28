@@ -164,8 +164,6 @@ CONTEXT_RECENT_HOURS=168    # これ以内 → RECENT / これ超 → STALE
 **条件**: Claude の回答に具体的な投資判断・見解・リスク評価が含まれる場合
 **記録されないもの**: 生データの羅列、ユーザーが既に記録済みの内容
 
-**KIK-503: target メモ→Linear issue 連携**: `type: target`（購入/売却予定）の投資メモ保存後、Linear issue 登録を促す。詳細は `intent-routing.md` の記録ドメインセクション参照
-
 ## 投資lessonの参照 (KIK-534)
 
 `get_context.py` の出力に「## 投資lesson」セクションが自動付加される。type=lesson のノートに trigger（トリガー条件）と expected_action（次回アクション）が含まれている場合、スキル実行時のコンテキストとして表示される。

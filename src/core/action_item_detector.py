@@ -1,7 +1,7 @@
 """Action item detector for proactive suggestions (KIK-472, KIK-489).
 
 Converts proactive engine suggestions and health check data into structured
-action items suitable for Linear issue creation and Neo4j storage.
+action items for local display and Neo4j storage.
 """
 
 import re
@@ -21,24 +21,24 @@ _RE_US_SYMBOL = re.compile(_B_L + r"([A-Z]{2,5})" + _B_R)
 
 
 # Keyword → trigger mapping
-_TRIGGER_MAP: list[tuple[list[str], str, int, str]] = [
-    # (keywords, trigger_type, linear_priority, title_format)
-    (["撤退", "EXIT", "exit"], "exit", 2, "[Action] {symbol} 売却検討"),
-    (["決算", "earnings", "Earnings"], "earnings", 2, "[Action] {symbol} 決算前チェック"),
-    (["テーゼ", "thesis", "投資テーゼ"], "thesis_review", 3, "[Action] {symbol} テーゼ見直し"),
-    (["懸念", "concern", "リスク確認"], "concern", 3, "[Action] {symbol} 懸念再確認"),
+_TRIGGER_MAP: list[tuple[list[str], str, str]] = [
+    # (keywords, trigger_type, title_format)
+    (["撤退", "EXIT", "exit"], "exit", "[Action] {symbol} 売却検討"),
+    (["決算", "earnings", "Earnings"], "earnings", "[Action] {symbol} 決算前チェック"),
+    (["テーゼ", "thesis", "投資テーゼ"], "thesis_review", "[Action] {symbol} テーゼ見直し"),
+    (["懸念", "concern", "リスク確認"], "concern", "[Action] {symbol} 懸念再確認"),
 ]
 
 
-def _match_trigger(text: str) -> tuple[str, int, str] | None:
+def _match_trigger(text: str) -> tuple[str, str] | None:
     """Match text against trigger patterns.
 
-    Returns (trigger_type, priority, title_format) or None.
+    Returns (trigger_type, title_format) or None.
     """
-    for keywords, trigger_type, priority, title_fmt in _TRIGGER_MAP:
+    for keywords, trigger_type, title_fmt in _TRIGGER_MAP:
         for kw in keywords:
             if kw in text:
-                return trigger_type, priority, title_fmt
+                return trigger_type, title_fmt
     return None
 
 
@@ -56,7 +56,7 @@ def detect_action_items(
 
     Returns:
         List of action item dicts:
-        [{trigger_type, title, description, symbol, priority, urgency, action_id}]
+        [{trigger_type, title, symbol, urgency, action_id}]
     """
     items: list[dict] = []
     today = date.today().isoformat()
@@ -73,7 +73,7 @@ def detect_action_items(
         if not match:
             continue
 
-        trigger_type, priority, title_fmt = match
+        trigger_type, title_fmt = match
 
         # Extract symbol from suggestion (heuristic: first word of title after emoji)
         symbol = _extract_symbol_from_suggestion(s)
@@ -87,9 +87,7 @@ def detect_action_items(
         items.append({
             "trigger_type": trigger_type,
             "title": title,
-            "description": reason,
             "symbol": symbol,
-            "priority": priority,
             "urgency": urgency,
             "action_id": action_id,
         })
@@ -113,9 +111,7 @@ def detect_action_items(
             items.append({
                 "trigger_type": "exit",
                 "title": f"[Action] {symbol} 売却検討",
-                "description": alert.get("message", "EXIT判定"),
                 "symbol": symbol,
-                "priority": 2,
                 "urgency": "high",
                 "action_id": action_id,
             })

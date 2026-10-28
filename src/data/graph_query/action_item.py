@@ -13,8 +13,7 @@ from src.data.graph_query import _common
 def get_action_item_history(symbol: str | None = None, limit: int = 10) -> list[dict]:
     """Get ActionItem nodes for graph-query skill.
 
-    Returns list of {id, date, trigger_type, title, symbol, urgency, status,
-    linear_identifier, linear_issue_url}.
+    Returns list of {id, date, trigger_type, title, symbol, urgency, status}.
     """
     driver = _common._get_driver()
     if driver is None:
@@ -27,9 +26,7 @@ def get_action_item_history(symbol: str | None = None, limit: int = 10) -> list[
                     "RETURN a.id AS id, a.date AS date, "
                     "a.trigger_type AS trigger_type, a.title AS title, "
                     "a.symbol AS symbol, a.urgency AS urgency, "
-                    "a.status AS status, "
-                    "a.linear_identifier AS linear_identifier, "
-                    "a.linear_issue_url AS linear_issue_url "
+                    "a.status AS status "
                     "ORDER BY a.date DESC LIMIT $limit",
                     symbol=symbol, limit=limit,
                 )
@@ -39,9 +36,7 @@ def get_action_item_history(symbol: str | None = None, limit: int = 10) -> list[
                     "RETURN a.id AS id, a.date AS date, "
                     "a.trigger_type AS trigger_type, a.title AS title, "
                     "a.symbol AS symbol, a.urgency AS urgency, "
-                    "a.status AS status, "
-                    "a.linear_identifier AS linear_identifier, "
-                    "a.linear_issue_url AS linear_issue_url "
+                    "a.status AS status "
                     "ORDER BY a.date DESC LIMIT $limit",
                     limit=limit,
                 )

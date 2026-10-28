@@ -77,14 +77,3 @@ class GraphWriter(Protocol):
     ) -> bool:
         """Create or update an ActionItem node. Returns True on success."""
         ...
-
-    def update_action_item_linear(
-        self,
-        *,
-        action_id: str,
-        linear_issue_id: str,
-        linear_issue_url: str,
-        linear_identifier: str,
-    ) -> None:
-        """Link an ActionItem node to its Linear issue."""
-        ...
