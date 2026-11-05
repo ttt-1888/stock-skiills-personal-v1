@@ -1,4 +1,4 @@
-"""Tests for the pre-commit hook logic (KIK-407, KIK-525).
+"""Tests for the local documentation hook logic (KIK-407, KIK-525).
 
 Creates a temporary git repo and tests the hook script behavior.
 When generate_docs.py is not available, falls back to manual doc check.
@@ -12,7 +12,10 @@ from pathlib import Path
 import pytest
 
 HOOK_SCRIPT = str(
-    Path(__file__).resolve().parents[2] / "scripts" / "hooks" / "pre-commit"
+    Path(__file__).resolve().parents[2] / "scripts" / "hooks" / "pre-commit-docs"
+)
+HOOK_PYTHON_SCRIPT = str(
+    Path(__file__).resolve().parents[2] / "scripts" / "hooks" / "pre-commit-docs.py"
 )
 
 
@@ -37,8 +40,10 @@ def _init_repo(tmp_path: Path) -> Path:
 
     import shutil
     shutil.copy2(HOOK_SCRIPT, str(hook_dest))
+    hook_python_dest = repo / "scripts" / "hooks" / "pre-commit-docs.py"
+    hook_python_dest.parent.mkdir(parents=True)
+    shutil.copy2(HOOK_PYTHON_SCRIPT, str(hook_python_dest))
     hook_dest.chmod(0o755)
-
     # Create initial commit so we have HEAD
     readme = repo / "README.md"
     readme.write_text("init")
@@ -101,7 +106,7 @@ class TestPreCommitHook:
         """src/ 外の Python ファイル変更はブロックされないこと."""
         repo = _init_repo(tmp_path)
 
-        (repo / "scripts").mkdir(parents=True)
+        (repo / "scripts").mkdir(parents=True, exist_ok=True)
         (repo / "scripts" / "run.py").write_text("print('hi')")
         subprocess.run(["git", "add", "scripts/run.py"], cwd=str(repo), capture_output=True)
 

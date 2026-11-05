@@ -1,0 +1,5 @@
+title = "stock-skills gitleaks configuration"
+
+[allowlist]
+description = "The detect-secrets baseline stores hashes of accepted findings."
+paths = ['''^\.secrets\.baseline$''']

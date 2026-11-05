@@ -7,6 +7,14 @@ __pycache__/
 *.pyc
 .venv/
 .env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+data/private/
 .claude/skills/stock-portfolio/data/portfolio.csv
 .claude/worktrees/
 .claude/settings.local.json
