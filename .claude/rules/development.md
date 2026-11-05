@@ -82,7 +82,7 @@ uv run python scripts/generate_docs.py check --quiet  # 陳腐化チェック（
 **自動化レイヤー:**
 
 1. **PostToolUse hook**: `.py` ファイル編集時に `check --quiet` で陳腐化を検出・報告
-2. **pre-commit hook**: `scripts/hooks/pre-commit` — src/ 変更時に `generate_docs.py all` を自動実行 + `data-models-verify` で不一致をブロック
+2. **pre-commit hooks**: `.pre-commit-config.yaml` — Gitleaks + detect-secrets でステージ内容の秘密情報を検査し、既存検出は `.secrets.baseline` で管理。Gitleaks 8.30.1 CLIをインストールし（Windows: `winget install --id Gitleaks.Gitleaks --version 8.30.1`）、`uv sync --dev` 後に `uv run pre-commit install` で有効化。既存検出を再スキャンする場合は `uv run detect-secrets scan --baseline .secrets.baseline`、baselineの監査は `uv run detect-secrets audit .secrets.baseline`。ローカルの `scripts/hooks/pre-commit-docs` は src/ 変更時に `generate_docs.py all` を実行し、`data-models-verify` 不一致をブロック
 
 **手動更新が必要なドキュメント:** `intent-routing.md`、各 `SKILL.md`、`rules/portfolio.md`、`rules/screening.md`
 
