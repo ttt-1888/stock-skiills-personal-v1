@@ -268,6 +268,45 @@ class TestSaveTrade:
         assert "realized_pnl" not in data
         assert "hold_days" not in data
 
+    def test_local_save_skips_external_sync_and_preserves_same_day_trades(self, tmp_path):
+        with patch("src.data.history.save_trade._dual_write_graph") as graph_write:
+            first = save_trade(
+                "7203.T", "buy", 10, 2850.0, "JPY", "2026-02-14",
+                base_dir=str(tmp_path), sync_external=False,
+            )
+            second = save_trade(
+                "7203.T", "buy", 5, 2900.0, "JPY", "2026-02-14",
+                base_dir=str(tmp_path), sync_external=False,
+            )
+
+        assert first != second
+        assert Path(first).exists()
+        assert Path(second).exists()
+        graph_write.assert_not_called()
+
+
+# ===================================================================
+# save_stress_test
+# ===================================================================
+
+
+class TestSaveStressTest:
+    def test_local_save_skips_external_sync_and_preserves_same_day_tests(self, tmp_path):
+        with patch("src.data.history.save_misc._dual_write_graph") as graph_write:
+            first = save_stress_test(
+                "triple_decline", ["7203.T"], -0.2,
+                base_dir=str(tmp_path), sync_external=False,
+            )
+            second = save_stress_test(
+                "triple_decline", ["7203.T"], -0.3,
+                base_dir=str(tmp_path), sync_external=False,
+            )
+
+        assert first != second
+        assert Path(first).exists()
+        assert Path(second).exists()
+        graph_write.assert_not_called()
+
 
 # ===================================================================
 # save_health

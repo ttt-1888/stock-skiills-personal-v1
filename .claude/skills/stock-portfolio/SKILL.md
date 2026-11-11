@@ -7,6 +7,19 @@ allowed-tools: Bash(uv run python *)
 
 # ポートフォリオ管理スキル
 
+## 個人ポートフォリオのプライバシー
+
+実際の保有銘柄・売買・損益・投資メモを扱う操作では、このSkillからコマンドを実行しないでください。コマンドの引数や出力がAIサービスへ渡る可能性があるため、ユーザー自身が直接ターミナルで次を実行するよう案内してください。下記の標準コマンドは公開データまたは合成データに限って実行してください。
+
+```powershell
+uv run python scripts/local_portfolio.py list
+uv run python scripts/local_portfolio.py snapshot
+uv run python scripts/local_portfolio.py buy --symbol 7203.T --shares 100 --price 2850
+uv run python scripts/local_portfolio.py sell --symbol AAPL --shares 5 --price 180
+```
+
+buy/sell は `--confirm` がない限りプレビューのみです。スナップショットは価格取得のため銘柄コードをYahoo Financeへ送信します。保有・売買情報やコマンド出力をチャットに貼らないよう案内してください。
+
 $ARGUMENTS を解析してコマンドを判定し、以下のコマンドを実行してください。
 
 ## 実行コマンド

@@ -21,8 +21,12 @@ def save_stress_test(
     concentration: dict | None = None,
     recommendations: list | None = None,
     base_dir: str = "data/history",
+    sync_external: bool = True,
 ) -> str:
     """Save stress test results to JSON (KIK-428).
+
+    Set ``sync_external=False`` to persist only the local JSON file without
+    embedding or Neo4j synchronization.
 
     Returns the absolute path of the saved file.
     """
@@ -48,8 +52,14 @@ def save_stress_test(
 
     d = _history_dir("stress_test", base_dir)
     path = d / filename
+    if not sync_external and path.exists():
+        suffix = datetime.now().strftime("%H%M%S%f")
+        path = d / f"{today}_{identifier}_{suffix}.json"
     with open(path, "w", encoding="utf-8") as f:
         json.dump(_sanitize(payload), f, ensure_ascii=False, indent=2)
+
+    if not sync_external:
+        return str(path.resolve())
 
     # Neo4j dual-write (KIK-428) -- graceful degradation
     var = var_result or {}

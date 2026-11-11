@@ -7,6 +7,16 @@ allowed-tools: Bash(uv run python *)
 
 # ポートフォリオ ストレステスト スキル
 
+## 個人ポートフォリオのプライバシー
+
+実際の保有銘柄・比率を使う場合、このSkillやAI経由でスクリプトを実行しないでください。ユーザー自身が直接ターミナルで以下を実行するよう案内してください。銘柄コードは価格・財務情報取得のためYahoo Financeへ送信されます。比率・結果はAIサービスに送らず、出力もチャットへ貼らないでください。
+
+```powershell
+uv run python scripts/local_portfolio.py stress-test --symbols 7203.T,AAPL --weights 0.6,0.4
+```
+
+## 実行コマンド（公開情報・テストデータのみ）
+
 $ARGUMENTS を解析してポートフォリオ銘柄リストとシナリオを判定し、以下のコマンドを実行してください。
 
 ## 実行コマンド

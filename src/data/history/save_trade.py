@@ -27,6 +27,7 @@ def save_trade(
     hold_days: Optional[int] = None,
     cost_price: Optional[float] = None,
     stock_info: Optional[dict] = None,
+    sync_external: bool = True,
 ) -> str:
     """Save a trade record to JSON.
 
@@ -44,6 +45,8 @@ def save_trade(
         保有日数（KIK-441）。
     cost_price : float, optional
         取得単価（KIK-441）。sell 時に保存。
+    sync_external : bool
+        False の場合、履歴JSONだけを保存し、embedding/Neo4j 同期を行わない。
     """
     today = date.today().isoformat()
     now = datetime.now().isoformat(timespec="seconds")
@@ -77,8 +80,14 @@ def save_trade(
 
     d = _history_dir("trade", base_dir)
     path = d / filename
+    if not sync_external and path.exists():
+        suffix = datetime.now().strftime("%H%M%S%f")
+        path = d / f"{today}_{identifier}_{suffix}.json"
     with open(path, "w", encoding="utf-8") as f:
         json.dump(_sanitize(payload), f, ensure_ascii=False, indent=2)
+
+    if not sync_external:
+        return str(path.resolve())
 
     # Neo4j dual-write (KIK-399/420/555) -- graceful degradation
     def _graph_write(sem_summary, emb):
