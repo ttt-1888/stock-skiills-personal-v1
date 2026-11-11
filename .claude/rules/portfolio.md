@@ -18,6 +18,7 @@ paths:
 - CSV ベース: `.claude/skills/stock-portfolio/data/portfolio.csv`
 - `.CASH` シンボル（JPY.CASH, USD.CASH）は Yahoo Finance API をスキップ
 - `_is_cash()` / `_cash_currency()` ヘルパーで判定
+- **個人データ保護**: 実際の保有・売買・損益・メモを使う処理はAI/Skill経由で実行しない。ユーザーに `scripts/local_portfolio.py` を自分のターミナルで実行してもらい、出力や個人情報をチャットに貼らないよう伝える。`snapshot` と `stress-test` は公開銘柄コードをYahoo Financeへ送信する。
 
 ## ヘルスチェック (KIK-356/357/374/403/438)
 

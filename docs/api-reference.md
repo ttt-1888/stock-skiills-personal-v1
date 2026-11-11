@@ -1067,7 +1067,7 @@ Save health check results to history (KIK-578 split from save.py).
 
 Save stress test and forecast results to history (KIK-578 split from save.py).
 
-- `save_stress_test(scenario: str, symbols: list[str], portfolio_impact: float, per_stock_impacts: list[dict] | None=None, var_result: dict | None=None, high_correlation_pairs: list | None=None, concentration: dict | None=None, recommendations: list | None=None, base_dir: str='data/history') -> str` — Save stress test results to JSON (KIK-428).
+- `save_stress_test(scenario: str, symbols: list[str], portfolio_impact: float, per_stock_impacts: list[dict] | None=None, var_result: dict | None=None, high_correlation_pairs: list | None=None, concentration: dict | None=None, recommendations: list | None=None, base_dir: str='data/history', sync_external: bool=True) -> str` — Save stress test results to JSON (KIK-428).
 - `save_forecast(positions: list[dict], total_value_jpy: float=0, base_dir: str='data/history') -> str` — Save forecast results to JSON (KIK-428).
 
 ### src.data.history.save_report
@@ -1093,7 +1093,7 @@ Save screening results to history (KIK-578 split from save.py).
 
 Save trade records to history (KIK-578 split from save.py).
 
-- `save_trade(symbol: str, trade_type: str, shares: int, price: float, currency: str, date_str: str, memo: str='', base_dir: str='data/history', sell_price: Optional[float]=None, realized_pnl: Optional[float]=None, pnl_rate: Optional[float]=None, hold_days: Optional[int]=None, cost_price: Optional[float]=None, stock_info: Optional[dict]=None) -> str` — Save a trade record to JSON.
+- `save_trade(symbol: str, trade_type: str, shares: int, price: float, currency: str, date_str: str, memo: str='', base_dir: str='data/history', sell_price: Optional[float]=None, realized_pnl: Optional[float]=None, pnl_rate: Optional[float]=None, hold_days: Optional[int]=None, cost_price: Optional[float]=None, stock_info: Optional[dict]=None, sync_external: bool=True) -> str` — Save a trade record to JSON.
 
 ### src.data.lesson_community
 

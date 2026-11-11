@@ -233,11 +233,21 @@ def main():
         default=-0.20,
         help="ベースショック率 (デフォルト: -0.20 = -20%%)",
     )
+    parser.add_argument(
+        "--local-only",
+        action="store_true",
+        help="コンテキスト・提案を使わず、履歴をローカル保存する",
+    )
+    parser.add_argument(
+        "--history-dir",
+        default="data/history",
+        help="履歴保存先ディレクトリ",
+    )
 
     args = parser.parse_args()
 
-    # Context retrieval (KIK-465)
-    print_context(f"stress-test {args.portfolio}")
+    if not args.local_only:
+        print_context(f"stress-test {args.portfolio}")
 
     # ------------------------------------------------------------------
     # Parse symbols
@@ -376,10 +386,13 @@ def main():
         )
     else:
         print("## Step 4-7: シナリオ分析\n")
-        print(
-            f"(scenario_analysis モジュールが未実装のため、"
-            f"Claudeが以下の情報を元にシナリオ分析を実施してください)\n"
-        )
+        if args.local_only:
+            print("(シナリオ分析モジュールが未実装のため、結果の詳細分析は行えません)\n")
+        else:
+            print(
+                f"(scenario_analysis モジュールが未実装のため、"
+                f"Claudeが以下の情報を元にシナリオ分析を実施してください)\n"
+            )
         print(f"- シナリオ: {args.scenario or '(PF構成から自動判定)'}")
         print(f"- ベースショック: {args.base_shock * 100:.0f}%")
         print(f"- 集中度倍率: {conc['concentration_multiplier']:.2f}x")
@@ -501,44 +514,46 @@ def main():
         print()
     else:
         print("## Step 8: 推奨アクション\n")
-        print(
-            "(stress_formatter モジュールが未実装のため、"
-            "上記の分析結果を元にClaudeが推奨アクションを生成してください)\n"
-        )
+        if args.local_only:
+            print("(レポート整形モジュールが未実装のため、ローカル出力の分析結果を確認してください)\n")
+        else:
+            print(
+                "(stress_formatter モジュールが未実装のため、"
+                "上記の分析結果を元にClaudeが推奨アクションを生成してください)\n"
+            )
 
     # ------------------------------------------------------------------
-    # Raw data dump for Claude's analysis
-    # ------------------------------------------------------------------
-    print("\n---\n## 分析用生データ (JSON)\n")
-    raw_data = {
-        "portfolio": [
-            {
-                "symbol": s.get("symbol"),
-                "name": s.get("name"),
-                "sector": s.get("sector"),
-                "country": s.get("country"),
-                "currency": s.get("currency"),
-                "weight": s.get("weight"),
-                "price": s.get("price"),
-                "beta": s.get("beta"),
-                "per": s.get("per"),
-                "pbr": s.get("pbr"),
-                "roe": s.get("roe"),
-                "dividend_yield": s.get("dividend_yield"),
-                "debt_to_equity": s.get("debt_to_equity"),
-                "current_ratio": s.get("current_ratio"),
-                "free_cashflow": s.get("free_cashflow"),
-                "revenue_growth": s.get("revenue_growth"),
-                "volatility_1y": s.get("volatility_1y"),
-                "market_cap": s.get("market_cap"),
-            }
-            for s in portfolio
-        ],
-        "concentration": conc,
-        "scenario": args.scenario,
-        "base_shock": args.base_shock,
-    }
-    print(json.dumps(raw_data, ensure_ascii=False, indent=2))
+    if not args.local_only:
+        print("\n---\n## 分析用生データ (JSON)\n")
+        raw_data = {
+            "portfolio": [
+                {
+                    "symbol": s.get("symbol"),
+                    "name": s.get("name"),
+                    "sector": s.get("sector"),
+                    "country": s.get("country"),
+                    "currency": s.get("currency"),
+                    "weight": s.get("weight"),
+                    "price": s.get("price"),
+                    "beta": s.get("beta"),
+                    "per": s.get("per"),
+                    "pbr": s.get("pbr"),
+                    "roe": s.get("roe"),
+                    "dividend_yield": s.get("dividend_yield"),
+                    "debt_to_equity": s.get("debt_to_equity"),
+                    "current_ratio": s.get("current_ratio"),
+                    "free_cashflow": s.get("free_cashflow"),
+                    "revenue_growth": s.get("revenue_growth"),
+                    "volatility_1y": s.get("volatility_1y"),
+                    "market_cap": s.get("market_cap"),
+                }
+                for s in portfolio
+            ],
+            "concentration": conc,
+            "scenario": args.scenario,
+            "base_shock": args.base_shock,
+        }
+        print(json.dumps(raw_data, ensure_ascii=False, indent=2))
 
     # ------------------------------------------------------------------
     # KIK-428: Auto-save stress test results
@@ -573,12 +588,16 @@ def main():
                 ),
                 concentration=conc,
                 recommendations=recommendations,
+                base_dir=args.history_dir,
+                sync_external=not args.local_only,
             )
-        except Exception:
-            pass  # graceful degradation
+        except Exception as exc:
+            if args.local_only:
+                raise
+            print(f"[stress-test] Warning: history save failed: {exc}", file=sys.stderr)
 
-    # Proactive suggestions (KIK-465)
-    print_suggestions(context_summary=f"ストレステスト完了: {args.portfolio}")
+    if not args.local_only:
+        print_suggestions(context_summary=f"ストレステスト完了: {args.portfolio}")
 
 
 if __name__ == "__main__":

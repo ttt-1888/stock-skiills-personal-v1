@@ -105,3 +105,67 @@ class TestLoadPortfolio:
         assert len(result) == 2
         assert result[0]["weight"] == 0.6
         assert result[1]["weight"] == 0.4
+
+
+def test_local_only_skips_context_suggestions_and_raw_data(monkeypatch, capsys, tmp_path):
+    import run_stress_test as stress_test
+
+    def unexpected_call(*args, **kwargs):
+        pytest.fail("AI context and suggestions must be skipped in local-only mode")
+
+    concentration = {
+        "sector_hhi": 1.0,
+        "region_hhi": 1.0,
+        "currency_hhi": 1.0,
+        "max_hhi_axis": "sector",
+        "max_hhi": 1.0,
+        "concentration_multiplier": 1.0,
+        "risk_level": "危険な集中",
+        "sector_breakdown": {},
+        "region_breakdown": {},
+        "currency_breakdown": {},
+    }
+    saved = {}
+    monkeypatch.setattr(stress_test, "print_context", unexpected_call)
+    monkeypatch.setattr(stress_test, "print_suggestions", unexpected_call)
+    monkeypatch.setattr(
+        stress_test,
+        "load_portfolio",
+        lambda symbols, weights: [{"symbol": "7203.T", "weight": 1.0}],
+    )
+    monkeypatch.setattr(stress_test, "analyze_concentration", lambda *args: concentration)
+    monkeypatch.setattr(stress_test, "analyze_stock_sensitivity", None)
+    monkeypatch.setattr(stress_test, "_fallback_print_portfolio_summary", lambda *args: None)
+    monkeypatch.setattr(stress_test, "_fallback_print_concentration", lambda *args: None)
+    monkeypatch.setattr(stress_test, "_fallback_print_shock_sensitivity", lambda *args: None)
+    monkeypatch.setattr(stress_test, "resolve_scenario", None)
+    monkeypatch.setattr(stress_test, "analyze_portfolio_scenario", None)
+    monkeypatch.setattr(stress_test, "compute_correlation_matrix", None)
+    monkeypatch.setattr(stress_test, "compute_var", None)
+    monkeypatch.setattr(stress_test, "generate_recommendations", None)
+    monkeypatch.setattr(stress_test, "format_full_stress_report", None)
+    monkeypatch.setattr(stress_test, "HAS_HISTORY", True)
+
+    def save_locally(**kwargs):
+        saved.update(kwargs)
+
+    monkeypatch.setattr(stress_test, "_save_stress_test", save_locally)
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "run_stress_test.py",
+            "--portfolio",
+            "7203.T",
+            "--local-only",
+            "--history-dir",
+            str(tmp_path),
+        ],
+    )
+
+    stress_test.main()
+
+    output = capsys.readouterr().out
+    assert "分析用生データ (JSON)" not in output
+    assert "Claude" not in output
+    assert saved["sync_external"] is False
+    assert saved["base_dir"] == str(tmp_path)
