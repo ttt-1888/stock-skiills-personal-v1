@@ -20,6 +20,8 @@ from typing import Optional
 _NEO4J_URI = os.environ.get("NEO4J_URI", "bolt://localhost:7688")
 _NEO4J_USER = os.environ.get("NEO4J_USER", "neo4j")
 _NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD")
+_NEO4J_CONNECTION_TIMEOUT = 5.0
+_NEO4J_CONNECTION_ACQUISITION_TIMEOUT = 5.0
 
 _driver = None
 _unavailable_warned = False  # KIK-443: warn once on connection failure
@@ -66,7 +68,12 @@ def _get_driver():
         return None
     try:
         from neo4j import GraphDatabase
-        _driver = GraphDatabase.driver(_NEO4J_URI, auth=(_NEO4J_USER, _NEO4J_PASSWORD))
+        _driver = GraphDatabase.driver(
+            _NEO4J_URI,
+            auth=(_NEO4J_USER, _NEO4J_PASSWORD),
+            connection_timeout=_NEO4J_CONNECTION_TIMEOUT,
+            connection_acquisition_timeout=_NEO4J_CONNECTION_ACQUISITION_TIMEOUT,
+        )
         return _driver
     except Exception:
         return None

@@ -212,7 +212,7 @@ CONTEXT_RECENT_HOURS=168    # これ以内 → RECENT / これ超 → STALE
 
 - 冒頭: `print_context()` でグラフコンテキストを自動取得・表示
 - 末尾: `print_suggestions()` でプロアクティブ提案を自動表示
-- 10秒タイムアウト（SIGALRM）
+- TEI HTTP通信とNeo4j接続のタイムアウトを使用（合計実行時間の上限ではない）
 - Neo4j 未接続・エラー時は graceful degradation（出力なし、クラッシュしない）
 
 ### CLI ラッパー（手動実行用）
