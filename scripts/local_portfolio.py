@@ -265,6 +265,7 @@ def _backup(args: argparse.Namespace) -> None:
             dir=output.parent, prefix=f".{output.name}.", suffix=".tmp", delete=False
         ) as temp_file:
             temp_path = temp_file.name
+        temp_archive_path = Path(temp_path).resolve()
         with ZipFile(temp_path, "w", compression=ZIP_DEFLATED) as archive:
             if csv_path.is_file():
                 archive.write(csv_path, "portfolio.csv")
@@ -281,6 +282,8 @@ def _backup(args: argparse.Namespace) -> None:
                             raise ValueError(
                                 f"バックアップ元にシンボリックリンクは使えません: {source}"
                             )
+                        if source.resolve() == temp_archive_path:
+                            continue
                         if source.is_file():
                             member = f"{label}/{source.relative_to(root).as_posix()}"
                             archive.write(source, member)

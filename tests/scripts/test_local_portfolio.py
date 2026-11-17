@@ -216,6 +216,28 @@ def test_backup_removes_temporary_archive_when_finalization_fails(tmp_path):
     assert list(tmp_path.glob(".backup.zip.*.tmp")) == []
 
 
+def test_backup_excludes_temporary_archive_inside_source_directory(tmp_path):
+    history_dir = tmp_path / "history"
+    history_dir.mkdir()
+    (history_dir / "synthetic.json").write_text(
+        '{"memo": "synthetic"}', encoding="utf-8"
+    )
+    output = history_dir / "backup.zip"
+    args = SimpleNamespace(
+        csv=str(tmp_path / "portfolio.csv"),
+        history_dir=str(history_dir),
+        notes_dir=str(tmp_path / "notes"),
+        output=str(output),
+    )
+
+    local_portfolio._backup(args)
+
+    from zipfile import ZipFile
+
+    with ZipFile(output) as archive:
+        assert set(archive.namelist()) == {"history/synthetic.json", "manifest.json"}
+
+
 def test_restore_rejects_path_traversal(tmp_path):
     from zipfile import ZipFile
 
