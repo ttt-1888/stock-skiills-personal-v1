@@ -274,7 +274,7 @@ Portfolio concentration analysis module.
 FX conversion utilities (KIK-511).
 
 - `fx_symbol_for_currency(currency: str) -> Optional[str]` — Return the yfinance FX pair symbol for converting *currency* to JPY.
-- `get_fx_rates(client) -> dict[str, float]` — Fetch major FX rates (per-unit JPY values) via yahoo_client.
+- `get_fx_rates(client, currencies: set[str] | None=None) -> dict[str, float]` — Fetch major FX rates (per-unit JPY values) via yahoo_client.
 - `get_rate(currency: str, fx_rates: dict[str, float]) -> float` — Return the per-unit JPY rate for *currency*.
 - `convert_to_jpy(amount: float, currency: str, fx_rates: dict[str, float]) -> float` — Convert *amount* in *currency* to JPY.
 
@@ -1061,14 +1061,14 @@ History store save functions — re-export shim (KIK-578).
 
 Save health check results to history (KIK-578 split from save.py).
 
-- `save_health(health_data: dict, base_dir: str='data/history') -> str` — Save health check results to JSON.
+- `save_health(health_data: dict, base_dir: str='data/history', sync_external: bool=False) -> str` — Save health check results to JSON.
 
 ### src.data.history.save_misc
 
 Save stress test and forecast results to history (KIK-578 split from save.py).
 
-- `save_stress_test(scenario: str, symbols: list[str], portfolio_impact: float, per_stock_impacts: list[dict] | None=None, var_result: dict | None=None, high_correlation_pairs: list | None=None, concentration: dict | None=None, recommendations: list | None=None, base_dir: str='data/history', sync_external: bool=True) -> str` — Save stress test results to JSON (KIK-428).
-- `save_forecast(positions: list[dict], total_value_jpy: float=0, base_dir: str='data/history') -> str` — Save forecast results to JSON (KIK-428).
+- `save_stress_test(scenario: str, symbols: list[str], portfolio_impact: float, per_stock_impacts: list[dict] | None=None, var_result: dict | None=None, high_correlation_pairs: list | None=None, concentration: dict | None=None, recommendations: list | None=None, base_dir: str='data/history', sync_external: bool=False) -> str` — Save stress test results to JSON (KIK-428).
+- `save_forecast(positions: list[dict], total_value_jpy: float=0, base_dir: str='data/history', sync_external: bool=False) -> str` — Save forecast results to JSON (KIK-428).
 
 ### src.data.history.save_report
 
@@ -1093,7 +1093,7 @@ Save screening results to history (KIK-578 split from save.py).
 
 Save trade records to history (KIK-578 split from save.py).
 
-- `save_trade(symbol: str, trade_type: str, shares: int, price: float, currency: str, date_str: str, memo: str='', base_dir: str='data/history', sell_price: Optional[float]=None, realized_pnl: Optional[float]=None, pnl_rate: Optional[float]=None, hold_days: Optional[int]=None, cost_price: Optional[float]=None, stock_info: Optional[dict]=None, sync_external: bool=True) -> str` — Save a trade record to JSON.
+- `save_trade(symbol: str, trade_type: str, shares: int, price: float, currency: str, date_str: str, memo: str='', base_dir: str='data/history', sell_price: Optional[float]=None, realized_pnl: Optional[float]=None, pnl_rate: Optional[float]=None, hold_days: Optional[int]=None, cost_price: Optional[float]=None, stock_info: Optional[dict]=None, sync_external: bool=False) -> str` — Save a trade record to JSON.
 
 ### src.data.lesson_community
 
@@ -1114,19 +1114,25 @@ Unified lesson conflict detection engine (KIK-570).
 - `extract_trigger(lesson: dict) -> str` — Extract trigger from lesson, falling back to content parsing.
 - `extract_action(lesson: dict) -> str` — Extract expected_action from lesson, falling back to content parsing.
 - `embedding_similarity(text_a: str, text_b: str) -> Optional[float]` — Compute cosine similarity via TEI embeddings. Returns None if unavailable.
-- `find_conflicts(new_lesson: dict, existing_lessons: list[dict], similarity_threshold: float=0.5, max_results: int=5) -> list[dict]` — Detect conflicts between a new lesson and existing lessons.
+- `find_conflicts(new_lesson: dict, existing_lessons: list[dict], similarity_threshold: float=0.5, max_results: int=5, use_embeddings: bool=False) -> list[dict]` — Detect conflicts between a new lesson and existing lessons.
 - `find_conflict_pairs(lessons: list[dict]) -> dict[str, str]` — Find lesson IDs with potential contradictions.
 
 ### src.data.note_manager
 
-Note manager -- dual-write to JSON files and Neo4j (KIK-397, KIK-429).
+Note manager -- local JSON persistence with optional external sync.
 
-- `save_note(symbol: Optional[str]=None, note_type: str='observation', content: str='', source: str='', category: Optional[str]=None, base_dir: str=_NOTES_DIR, trigger: Optional[str]=None, expected_action: Optional[str]=None, stop_loss: Optional[str]=None, take_profit: Optional[str]=None) -> dict` — Save a note to JSON file and Neo4j.
+- `save_note(symbol: Optional[str]=None, note_type: str='observation', content: str='', source: str='', category: Optional[str]=None, base_dir: str=_NOTES_DIR, trigger: Optional[str]=None, expected_action: Optional[str]=None, stop_loss: Optional[str]=None, take_profit: Optional[str]=None, sync_external: bool=False) -> dict` — Save a note locally; external sync is disabled by default.
 - `load_notes(symbol: Optional[str]=None, note_type: Optional[str]=None, category: Optional[str]=None, base_dir: str=_NOTES_DIR) -> list[dict]` — Load notes from JSON files.
-- `check_lesson_conflicts(new_lesson: dict, base_dir: str=_NOTES_DIR, similarity_threshold: float=0.5) -> list[dict]` — Check if a new lesson conflicts with existing lessons (KIK-564/570).
+- `check_lesson_conflicts(new_lesson: dict, base_dir: str=_NOTES_DIR, similarity_threshold: float=0.5, use_embeddings: bool=False) -> list[dict]` — Check if a new lesson conflicts with existing lessons (KIK-564/570).
 - `get_exit_rules(symbol: Optional[str]=None, base_dir: str=_NOTES_DIR) -> list[dict]` — Load exit-rule notes, optionally filtered by symbol (KIK-566).
 - `check_exit_rule(symbol: str, pnl_pct: float, base_dir: str=_NOTES_DIR) -> Optional[dict]` — Check if a position has hit any exit-rule threshold (KIK-566).
 - `delete_note(note_id: str, base_dir: str=_NOTES_DIR) -> bool` — Delete a note by ID from JSON files.
+
+### src.data.private_storage
+
+Resolve user-local storage paths for private investment data.
+
+- `private_data_dir() -> Path` — Return a per-user data directory outside the repository workspace.
 
 ### src.data.user_profile
 

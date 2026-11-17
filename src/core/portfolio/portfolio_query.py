@@ -5,6 +5,7 @@ P&L calculation, structural analysis, and what-if merge operations.
 """
 
 import copy
+import math
 from datetime import datetime
 
 from src.core.common import is_cash as _is_cash
@@ -80,10 +81,16 @@ def get_snapshot(csv_path: str, client) -> dict:
         currencies_needed.add(_infer_currency(pos["symbol"]))
 
     # Fetch FX rates (only if non-JPY currencies exist)
-    if currencies_needed - {"JPY"}:
-        fx_rates = get_fx_rates(client)
+    non_jpy_currencies = currencies_needed - {"JPY"}
+    if non_jpy_currencies:
+        fx_rates = get_fx_rates(client, currencies=non_jpy_currencies)
     else:
         fx_rates = {"JPY": 1.0}
+    missing_rates = sorted(currencies_needed - fx_rates.keys())
+    if missing_rates:
+        raise RuntimeError(
+            "為替レートを取得できません: " + ", ".join(missing_rates)
+        )
 
     # Fetch current prices and build position details
     positions: list[dict] = []
@@ -126,30 +133,35 @@ def get_snapshot(csv_path: str, client) -> dict:
 
         # Get current market data
         info = client.get_stock_info(symbol)
+        if not info or info.get("price") is None:
+            raise RuntimeError(f"現在価格を取得できません: {symbol}")
         current_price = None
         name = None
         sector = None
         market_currency = _infer_currency(symbol)
 
         market_cap = None
-        if info is not None:
-            current_price = info.get("price")
-            name = info.get("name")
-            sector = info.get("sector")
-            market_cap = info.get("market_cap")
-            # Use the currency from yfinance if available
-            if info.get("currency"):
-                market_currency = info["currency"]
+        try:
+            current_price = float(info["price"])
+        except (TypeError, ValueError):
+            raise RuntimeError(f"有効な現在価格を取得できません: {symbol}")
+        if not math.isfinite(current_price) or current_price <= 0:
+            raise RuntimeError(f"有効な現在価格を取得できません: {symbol}")
+        name = info.get("name")
+        sector = info.get("sector")
+        market_cap = info.get("market_cap")
+        # Use the currency from yfinance if available
+        if info.get("currency"):
+            market_currency = info["currency"]
+        if market_currency not in fx_rates:
+            raise RuntimeError(
+                f"{symbol} の通貨 {market_currency} の為替レートを取得できません"
+            )
 
         # P&L calculation (in market currency)
-        if current_price is not None:
-            pnl = (current_price - cost_price) * shares
-            pnl_pct = (current_price - cost_price) / cost_price if cost_price != 0 else 0.0
-            evaluation = current_price * shares
-        else:
-            pnl = 0.0
-            pnl_pct = 0.0
-            evaluation = 0.0
+        pnl = (current_price - cost_price) * shares
+        pnl_pct = (current_price - cost_price) / cost_price if cost_price != 0 else 0.0
+        evaluation = current_price * shares
 
         # JPY conversion
         fx_rate = _get_fx_rate_for_currency(market_currency, fx_rates)

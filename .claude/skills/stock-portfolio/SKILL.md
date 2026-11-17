@@ -16,9 +16,15 @@ uv run python scripts/local_portfolio.py list
 uv run python scripts/local_portfolio.py snapshot
 uv run python scripts/local_portfolio.py buy --symbol 7203.T --shares 100 --price 2850
 uv run python scripts/local_portfolio.py sell --symbol AAPL --shares 5 --price 180
+uv run python scripts/local_portfolio.py backup
+uv run python scripts/local_portfolio.py restore --backup <バックアップZIP> --confirm
 ```
 
-buy/sell は `--confirm` がない限りプレビューのみです。スナップショットは価格取得のため銘柄コードをYahoo Financeへ送信します。保有・売買情報やコマンド出力をチャットに貼らないよう案内してください。
+buy/sell は `--confirm` がない限りプレビューのみです。データの既定保存先はWindowsでは `%LOCALAPPDATA%\stock-skills-personal\`、macOS/Linuxでは `$XDG_DATA_HOME/stock-skills-personal/`（未設定時は `~/.local/share/stock-skills-personal/`）です。旧リポジトリ内保存先からの自動移行は行いません。
+
+価格または必要な為替レートが取得できない場合、スナップショットは不完全な値を表示せず終了します。`snapshot` と `stress-test` は価格取得のため銘柄コードをYahoo Financeへ送信します。履歴・メモの保存は既定でNeo4j/TEI同期を行いません。バックアップZIPは暗号化されないため、安全な場所に保管してください。
+
+実際の保有情報、売買、損益、投資メモに対しては、このSkillからコマンドを実行せず、ユーザーに直接ターミナルでの操作を案内してください。出力をチャットへ貼り付けないよう案内してください。
 
 $ARGUMENTS を解析してコマンドを判定し、以下のコマンドを実行してください。
 

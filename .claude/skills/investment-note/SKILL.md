@@ -7,6 +7,8 @@ allowed-tools: Bash(uv run python *)
 
 # 投資メモ管理スキル
 
+実際の投資メモや個人的な記録はAIチャットに入力せず、このSkillから読み書きしないでください。実データを扱う場合はユーザー自身が直接ターミナルで `manage_note.py` を実行するよう案内し、結果をチャットへ貼らないよう伝えてください。保存先はWindowsでは `%LOCALAPPDATA%\stock-skills-personal\notes`、macOS/Linuxではユーザーのローカルデータ領域です。メモのNeo4j/TEI同期は既定で無効です。
+
 $ARGUMENTS を解析し、以下のコマンドを実行してください。
 
 ## 実行コマンド

@@ -1,8 +1,8 @@
-"""Note manager -- dual-write to JSON files and Neo4j (KIK-397, KIK-429).
+"""Note manager -- local JSON persistence with optional external sync.
 
 Notes are investment memos (thesis, observation, concern, review, target)
 attached to specific stocks or to categories (portfolio, market, general).
-The JSON file is the master; Neo4j is a view.
+The JSON file is the master; external sync is opt-in.
 """
 
 import json
@@ -11,8 +11,10 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Optional
 
+from src.data.private_storage import private_data_dir
+from src.data.history._helpers import _write_json_atomic
 
-_NOTES_DIR = "data/notes"
+_NOTES_DIR = str(private_data_dir() / "notes")
 _VALID_TYPES = {"thesis", "observation", "concern", "review", "target", "lesson", "journal", "exit-rule"}
 _VALID_CATEGORIES = {"stock", "portfolio", "market", "general"}
 
@@ -34,8 +36,9 @@ def save_note(
     expected_action: Optional[str] = None,
     stop_loss: Optional[str] = None,
     take_profit: Optional[str] = None,
+    sync_external: bool = False,
 ) -> dict:
-    """Save a note to JSON file and Neo4j.
+    """Save a note locally; external sync is disabled by default.
 
     Parameters
     ----------
@@ -57,6 +60,8 @@ def save_note(
         What triggered this lesson (KIK-534). Only stored for type="lesson".
     expected_action : str, optional
         What action should be taken next time (KIK-534). Only stored for type="lesson".
+    sync_external : bool
+        If true, also send note content to configured embedding and graph services. Only stored for type="lesson".
 
     Returns
     -------
@@ -120,7 +125,9 @@ def save_note(
     lesson_conflicts: list[dict] = []
     if note_type == "lesson":
         try:
-            lesson_conflicts = check_lesson_conflicts(note, base_dir=base_dir)
+            lesson_conflicts = check_lesson_conflicts(
+                note, base_dir=base_dir, use_embeddings=sync_external
+            )
         except Exception:
             pass  # graceful degradation
 
@@ -150,66 +157,62 @@ def save_note(
             existing = []
 
     existing.append(note)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(existing, f, ensure_ascii=False, indent=2)
+    _write_json_atomic(path, existing)
 
-    # 2. Write to Neo4j (view) -- graceful degradation
-    try:
-        from src.data.graph_store import merge_note
-        from src.data.history import _build_embedding
-        sem_summary, emb = _build_embedding(
-            "note", symbol=symbol or "", note_type=note_type, content=content,
-            trigger=note.get("trigger", ""),
-            expected_action=note.get("expected_action", ""),
-        )
-        merge_note(
-            note_id=note_id,
-            note_date=today,
-            note_type=note_type,
-            content=content,
-            symbol=symbol or None,
-            source=source,
-            category=resolved_category,
-            semantic_summary=sem_summary,
-            embedding=emb,
-        )
-        # KIK-473: Create ABOUT relationships for detected symbols in journal notes
-        if detected_symbols:
-            from src.data.graph_store import _get_mode, _get_driver
-            if _get_mode() != "off":
-                driver = _get_driver()
-                if driver is not None:
-                    with driver.session() as session:
-                        for ds in detected_symbols:
-                            session.run(
-                                "MATCH (n:Note {id: $note_id}) "
-                                "MERGE (s:Stock {symbol: $symbol}) "
-                                "MERGE (n)-[:ABOUT]->(s)",
-                                note_id=note_id, symbol=ds,
-                            )
-    except Exception:
-        pass  # Neo4j unavailable, JSON is the master
-
-    # KIK-434: AI graph linking (graceful degradation)
-    try:
-        from src.data.graph_store.linker import link_note
-        if detected_symbols:
-            for ds in detected_symbols:
-                link_note(note_id, ds, note_type, content)
-        else:
-            link_note(note_id, symbol, note_type, content)
-    except Exception:
-        pass
-
-    # KIK-571: Lesson community classification
-    if note_type == "lesson":
+    if sync_external:
         try:
-            from src.data.lesson_community import classify_lesson, merge_lesson_community
-            community = classify_lesson(content, trigger or "")
-            merge_lesson_community(note_id, community)
-            note["_lesson_community"] = community
+            from src.data.graph_store import merge_note
+            from src.data.history import _build_embedding
+            sem_summary, emb = _build_embedding(
+                "note", symbol=symbol or "", note_type=note_type, content=content,
+                trigger=note.get("trigger", ""),
+                expected_action=note.get("expected_action", ""),
+            )
+            merge_note(
+                note_id=note_id,
+                note_date=today,
+                note_type=note_type,
+                content=content,
+                symbol=symbol or None,
+                source=source,
+                category=resolved_category,
+                semantic_summary=sem_summary,
+                embedding=emb,
+            )
+            if detected_symbols:
+                from src.data.graph_store import _get_mode, _get_driver
+                if _get_mode() != "off":
+                    driver = _get_driver()
+                    if driver is not None:
+                        with driver.session() as session:
+                            for ds in detected_symbols:
+                                session.run(
+                                    "MATCH (n:Note {id: $note_id}) "
+                                    "MERGE (s:Stock {symbol: $symbol}) "
+                                    "MERGE (n)-[:ABOUT]->(s)",
+                                    note_id=note_id, symbol=ds,
+                                )
         except Exception:
-            pass  # graceful degradation
+            pass
+
+        try:
+            from src.data.graph_store.linker import link_note
+            if detected_symbols:
+                for ds in detected_symbols:
+                    link_note(note_id, ds, note_type, content)
+            else:
+                link_note(note_id, symbol, note_type, content)
+        except Exception:
+            pass
+
+        if note_type == "lesson":
+            try:
+                from src.data.lesson_community import classify_lesson, merge_lesson_community
+                community = classify_lesson(content, trigger or "")
+                merge_lesson_community(note_id, community)
+                note["_lesson_community"] = community
+            except Exception:
+                pass
 
     # KIK-564: Attach conflicts to return value
     if lesson_conflicts:
@@ -277,6 +280,7 @@ def check_lesson_conflicts(
     new_lesson: dict,
     base_dir: str = _NOTES_DIR,
     similarity_threshold: float = 0.5,
+    use_embeddings: bool = False,
 ) -> list[dict]:
     """Check if a new lesson conflicts with existing lessons (KIK-564/570).
 
@@ -287,7 +291,12 @@ def check_lesson_conflicts(
         return []
     try:
         from src.data.lesson_conflict import find_conflicts
-        return find_conflicts(new_lesson, existing, similarity_threshold)
+        return find_conflicts(
+            new_lesson,
+            existing,
+            similarity_threshold,
+            use_embeddings=use_embeddings,
+        )
     except ImportError:
         return []
 

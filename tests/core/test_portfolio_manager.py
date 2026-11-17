@@ -648,6 +648,52 @@ class TestGetSnapshotCash:
         assert not client.called
 
 
+class TestGetSnapshotDataFailures:
+    def test_missing_quote_fails_instead_of_returning_zero_value(self, csv_path):
+        from src.core.portfolio.portfolio_manager import get_snapshot
+
+        save_portfolio(
+            [{
+                "symbol": "7203.T",
+                "shares": 2,
+                "cost_price": 100.0,
+                "cost_currency": "JPY",
+                "purchase_date": "2025-01-01",
+                "memo": "",
+            }],
+            csv_path,
+        )
+
+        class MissingQuoteClient:
+            def get_stock_info(self, symbol):
+                return None
+
+        with pytest.raises(RuntimeError, match="現在価格を取得できません: 7203.T"):
+            get_snapshot(csv_path, MissingQuoteClient())
+
+    def test_missing_fx_rate_fails_instead_of_using_parity(self, csv_path):
+        from src.core.portfolio.portfolio_manager import get_snapshot
+
+        save_portfolio(
+            [{
+                "symbol": "AAPL",
+                "shares": 2,
+                "cost_price": 100.0,
+                "cost_currency": "USD",
+                "purchase_date": "2025-01-01",
+                "memo": "",
+            }],
+            csv_path,
+        )
+
+        class MissingFxClient:
+            def get_stock_info(self, symbol):
+                return None
+
+        with pytest.raises(RuntimeError, match="為替レートを取得できません: USD"):
+            get_snapshot(csv_path, MissingFxClient())
+
+
 class TestGetPortfolioShareholderReturn:
     """Tests for get_portfolio_shareholder_return (KIK-393)."""
 

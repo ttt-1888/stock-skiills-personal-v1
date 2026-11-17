@@ -1,13 +1,12 @@
 """Save trade records to history (KIK-578 split from save.py)."""
 
-import json
 from datetime import date, datetime
 from typing import Optional
 
 from src.data.history._helpers import (
     _safe_filename,
     _history_dir,
-    _sanitize,
+    _write_json_atomic,
     _dual_write_graph,
 )
 
@@ -27,7 +26,7 @@ def save_trade(
     hold_days: Optional[int] = None,
     cost_price: Optional[float] = None,
     stock_info: Optional[dict] = None,
-    sync_external: bool = True,
+    sync_external: bool = False,
 ) -> str:
     """Save a trade record to JSON.
 
@@ -83,8 +82,7 @@ def save_trade(
     if not sync_external and path.exists():
         suffix = datetime.now().strftime("%H%M%S%f")
         path = d / f"{today}_{identifier}_{suffix}.json"
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(_sanitize(payload), f, ensure_ascii=False, indent=2)
+    _write_json_atomic(path, payload)
 
     if not sync_external:
         return str(path.resolve())

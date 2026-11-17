@@ -24,6 +24,15 @@ uv run python scripts/local_portfolio.py stress-test --symbols 7203.T,AAPL --wei
 
 購入・売却は既定でプレビューのみです。内容を確認して記録する場合だけ `--confirm` を付けて再実行してください。履歴はローカル保存し、TEI/Neo4jへの同期は行いません。`snapshot` と `stress-test` は価格・財務情報取得のため公開銘柄コードをYahoo Financeへ送ります。CLIの出力には保有株数・損益などの個人情報が含まれます。
 
+保存先はWindowsでは `%LOCALAPPDATA%\stock-skills-personal\`、macOS/Linuxでは `$XDG_DATA_HOME/stock-skills-personal/`（未設定時は `~/.local/share/stock-skills-personal/`）です。旧リポジトリ内データは自動移行しません。PF・履歴・メモのバックアップと復元:
+
+```powershell
+uv run python scripts/local_portfolio.py backup
+uv run python scripts/local_portfolio.py restore --backup <バックアップZIP> --confirm
+```
+
+バックアップZIPは暗号化されません。同じOSユーザーで実行する他アプリから技術的に隔離されるわけではないため、実データや出力をAIチャットに貼らないでください。
+
 ### 証明書ストアのセキュリティ更新
 
 Python の `requests` などが使う CA 証明書バンドルは `certifi` です。更新をロックファイルで管理できるよう、`certifi` は直接依存として登録しています。証明書関連の緊急更新時は次を実行してください。

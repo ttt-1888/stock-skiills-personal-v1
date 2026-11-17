@@ -6,7 +6,9 @@ persistence with position tracking and P&L calculation.
 
 import csv
 import os
+import tempfile
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 from src.core.ticker_utils import (
@@ -82,23 +84,37 @@ def save_portfolio(
 
     ディレクトリが存在しない場合は自動作成する。
     """
-    csv_path = os.path.normpath(csv_path)
-    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
-
-    with open(csv_path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
-        writer.writeheader()
-        for pos in portfolio:
-            writer.writerow(
-                {
-                    "symbol": pos.get("symbol", ""),
-                    "shares": pos.get("shares", 0),
-                    "cost_price": pos.get("cost_price", 0.0),
-                    "cost_currency": pos.get("cost_currency", "JPY"),
-                    "purchase_date": pos.get("purchase_date", ""),
-                    "memo": pos.get("memo", ""),
-                }
-            )
+    path = Path(os.path.normpath(csv_path))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path: str | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            delete=False,
+        ) as f:
+            temp_path = f.name
+            writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
+            writer.writeheader()
+            for pos in portfolio:
+                writer.writerow(
+                    {
+                        "symbol": pos.get("symbol", ""),
+                        "shares": pos.get("shares", 0),
+                        "cost_price": pos.get("cost_price", 0.0),
+                        "cost_currency": pos.get("cost_currency", "JPY"),
+                        "purchase_date": pos.get("purchase_date", ""),
+                        "memo": pos.get("memo", ""),
+                    }
+                )
+        os.replace(temp_path, path)
+    except OSError:
+        if temp_path and os.path.exists(temp_path):
+            os.unlink(temp_path)
+        raise
 
 
 # ---------------------------------------------------------------------------

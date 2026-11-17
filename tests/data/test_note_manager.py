@@ -77,14 +77,23 @@ class TestSaveNote:
         note = save_note("7203.T", "observation", "Note", source="health-check", base_dir=str(tmp_path))
         assert note["source"] == "health-check"
 
-    def test_save_note_neo4j_failure_still_saves_json(self, tmp_path):
-        """Neo4j failure should not prevent JSON write."""
-        with patch("src.data.graph_store.merge_note", side_effect=Exception("Neo4j down")):
+    def test_save_note_defaults_to_local_only(self, tmp_path):
+        """Private notes must not call graph, embedding, or AI-link services by default."""
+        with (
+            patch("src.data.graph_store.merge_note") as merge_note,
+            patch("src.data.history._helpers._build_embedding") as embedding,
+            patch("src.data.graph_store.linker.link_note") as link_note,
+            patch("src.data.lesson_conflict.embedding_similarity") as similarity,
+        ):
             note = save_note("7203.T", "thesis", "content", base_dir=str(tmp_path))
 
         assert note["content"] == "content"
         files = list(tmp_path.glob("*.json"))
         assert len(files) == 1
+        merge_note.assert_not_called()
+        embedding.assert_not_called()
+        link_note.assert_not_called()
+        similarity.assert_not_called()
 
     def test_save_note_creates_directory(self, tmp_path):
         nested = tmp_path / "sub" / "notes"
