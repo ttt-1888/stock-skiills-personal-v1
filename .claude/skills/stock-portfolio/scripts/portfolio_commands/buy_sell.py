@@ -5,20 +5,17 @@ from datetime import date
 from typing import Optional
 
 from portfolio_commands import (
-    HAS_GRAPH_STORE,
     HAS_HISTORY,
     HAS_PORTFOLIO_FORMATTER,
     HAS_PORTFOLIO_MANAGER,
     _fallback_load_csv,
     _fallback_save_csv,
     _fmt_conf_price,
-    _save_trade_market_context,
     add_position,
     format_trade_result,
     load_portfolio,
     save_trade,
     sell_position,
-    sync_portfolio,
 )
 
 
@@ -72,7 +69,6 @@ def cmd_buy(
                     save_trade(symbol, "buy", shares, price, currency, purchase_date, memo)
                 except Exception as e:
                     print(f"Warning: 履歴保存失敗: {e}", file=sys.stderr)
-                _save_trade_market_context()
             return
     else:
         holdings = _fallback_load_csv(csv_path)
@@ -110,15 +106,6 @@ def cmd_buy(
             save_trade(symbol, "buy", shares, price, currency, purchase_date, memo)
         except Exception as e:
             print(f"Warning: 履歴保存失敗: {e}", file=sys.stderr)
-        _save_trade_market_context()
-
-    # KIK-414: Sync portfolio to Neo4j
-    if HAS_GRAPH_STORE:
-        try:
-            _holdings = load_portfolio(csv_path) if HAS_PORTFOLIO_MANAGER else _fallback_load_csv(csv_path)
-            sync_portfolio(_holdings)
-        except Exception:
-            pass
 
 
 def cmd_sell(
@@ -211,7 +198,6 @@ def cmd_sell(
                     )
                 except Exception as e:
                     print(f"Warning: 履歴保存失敗: {e}", file=sys.stderr)
-                _save_trade_market_context()
             return
         except ValueError as e:
             print(f"Error: {e}")
@@ -244,12 +230,3 @@ def cmd_sell(
                        sell_price=sell_price)
         except Exception as e:
             print(f"Warning: 履歴保存失敗: {e}", file=sys.stderr)
-        _save_trade_market_context()
-
-    # KIK-414: Sync portfolio to Neo4j
-    if HAS_GRAPH_STORE:
-        try:
-            _holdings = load_portfolio(csv_path) if HAS_PORTFOLIO_MANAGER else _fallback_load_csv(csv_path)
-            sync_portfolio(_holdings)
-        except Exception:
-            pass

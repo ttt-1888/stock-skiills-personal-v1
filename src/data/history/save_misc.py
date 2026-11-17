@@ -1,12 +1,11 @@
 """Save stress test and forecast results to history (KIK-578 split from save.py)."""
 
-import json
 from datetime import date, datetime
 
 from src.data.history._helpers import (
     _safe_filename,
     _history_dir,
-    _sanitize,
+    _write_json_atomic,
     _dual_write_graph,
 )
 
@@ -21,7 +20,7 @@ def save_stress_test(
     concentration: dict | None = None,
     recommendations: list | None = None,
     base_dir: str = "data/history",
-    sync_external: bool = True,
+    sync_external: bool = False,
 ) -> str:
     """Save stress test results to JSON (KIK-428).
 
@@ -55,8 +54,7 @@ def save_stress_test(
     if not sync_external and path.exists():
         suffix = datetime.now().strftime("%H%M%S%f")
         path = d / f"{today}_{identifier}_{suffix}.json"
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(_sanitize(payload), f, ensure_ascii=False, indent=2)
+    _write_json_atomic(path, payload)
 
     if not sync_external:
         return str(path.resolve())
@@ -88,6 +86,7 @@ def save_forecast(
     positions: list[dict],
     total_value_jpy: float = 0,
     base_dir: str = "data/history",
+    sync_external: bool = False,
 ) -> str:
     """Save forecast results to JSON (KIK-428).
 
@@ -131,10 +130,11 @@ def save_forecast(
 
     d = _history_dir("forecast", base_dir)
     path = d / filename
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(_sanitize(payload), f, ensure_ascii=False, indent=2)
+    _write_json_atomic(path, payload)
 
-    # Neo4j dual-write (KIK-428) -- graceful degradation
+    if not sync_external:
+        return str(path.resolve())
+
     def _graph_write(sem_summary, emb):
         from src.data.graph_store import merge_forecast, merge_stock
         for sym in symbols:

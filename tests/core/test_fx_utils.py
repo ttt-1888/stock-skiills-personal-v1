@@ -107,6 +107,17 @@ class TestGetFxRates:
         output = capsys.readouterr().out
         assert "unavailable" in output
 
+    @pytest.mark.parametrize("price", [0, -1, float("nan"), float("inf")])
+    def test_invalid_rate_is_skipped(self, price, capsys):
+        class InvalidRateClient:
+            def get_stock_info(self, symbol):
+                return {"price": price}
+
+        rates = get_fx_rates(InvalidRateClient(), currencies={"USD"})
+
+        assert rates == {"JPY": 1.0}
+        assert "invalid" in capsys.readouterr().out
+
     def test_partial_success(self):
         """Some currencies succeed, others fail."""
         class PartialClient:
@@ -119,6 +130,19 @@ class TestGetFxRates:
         assert rates["JPY"] == 1.0
         assert rates["USD"] == 150.0
         assert "SGD" not in rates
+
+    def test_requested_currencies_limit_external_quote_symbols(self):
+        requested = []
+
+        class RecordingClient:
+            def get_stock_info(self, symbol):
+                requested.append(symbol)
+                return {"price": 150.0}
+
+        rates = get_fx_rates(RecordingClient(), currencies={"USD"})
+
+        assert requested == ["USDJPY=X"]
+        assert rates == {"JPY": 1.0, "USD": 150.0}
 
 
 # ===================================================================

@@ -94,6 +94,7 @@ class TestSaveTradeStockInfo:
                 price=2850.0, currency="JPY", date_str="2026-03-19",
                 base_dir=str(tmp_path),
                 stock_info=stock_info,
+                sync_external=True,
             )
 
         # _dual_write_graph should have been called

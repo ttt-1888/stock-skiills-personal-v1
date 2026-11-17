@@ -26,7 +26,7 @@ SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
 if SCRIPTS_DIR not in sys.path:
     sys.path.insert(0, SCRIPTS_DIR)
 
-from scripts.common import print_context, print_removal_contexts, print_suggestions
+from scripts.common import print_removal_contexts
 
 # ---------------------------------------------------------------------------
 # Import subcommand functions from portfolio_commands
@@ -282,9 +282,6 @@ def main():
         parser.print_help()
         sys.exit(1)
 
-    # Context retrieval (KIK-465)
-    print_context(f"portfolio {args.command}")
-
     csv_path = os.path.normpath(args.csv)
 
     if args.command == "snapshot":
@@ -362,15 +359,6 @@ def main():
     else:
         parser.print_help()
         sys.exit(1)
-
-    # Proactive suggestions (KIK-465) + action items (KIK-472)
-    _sym = getattr(args, "symbol", "") or ""
-    print_suggestions(
-        symbol=_sym,
-        context_summary=f"ポートフォリオ: {args.command}",
-        health_data=_last_health_data,
-    )
-
 
 if __name__ == "__main__":
     main()

@@ -59,6 +59,25 @@ class TestConnection:
         monkeypatch.setattr(_common, "_NEO4J_PASSWORD", None)
         assert _common._get_driver() is None
 
+    def test_get_driver_sets_connection_timeouts(self, monkeypatch):
+        from types import SimpleNamespace
+        from src.data.graph_store import _common
+
+        neo4j_driver = MagicMock()
+        graph_database = MagicMock()
+        graph_database.driver.return_value = neo4j_driver
+        monkeypatch.setattr(_common, "_driver", None)
+        monkeypatch.setattr(_common, "_NEO4J_PASSWORD", "synthetic-password")
+        with patch.dict("sys.modules", {"neo4j": SimpleNamespace(GraphDatabase=graph_database)}):
+            assert _common._get_driver() is neo4j_driver
+
+        graph_database.driver.assert_called_once_with(
+            _common._NEO4J_URI,
+            auth=(_common._NEO4J_USER, "synthetic-password"),
+            connection_timeout=5.0,
+            connection_acquisition_timeout=5.0,
+        )
+
     def test_is_available_success(self, gs_with_driver):
         gs, driver, _ = gs_with_driver
         driver.verify_connectivity.return_value = None

@@ -11,6 +11,7 @@ Usage::
     jpy_value = convert_to_jpy(100.0, "USD", rates)
 """
 
+import math
 from typing import Optional
 
 
@@ -45,7 +46,9 @@ def fx_symbol_for_currency(currency: str) -> Optional[str]:
     return f"{currency}JPY=X"
 
 
-def get_fx_rates(client) -> dict[str, float]:
+def get_fx_rates(
+    client, currencies: set[str] | None = None
+) -> dict[str, float]:
     """Fetch major FX rates (per-unit JPY values) via yahoo_client.
 
     Parameters
@@ -62,12 +65,24 @@ def get_fx_rates(client) -> dict[str, float]:
     """
     rates: dict[str, float] = {"JPY": 1.0}
 
-    for pair in FX_PAIRS:
+    pairs = (
+        FX_PAIRS
+        if currencies is None
+        else [
+            f"{currency}JPY=X"
+            for currency in sorted(currencies - {"JPY"})
+        ]
+    )
+    for pair in pairs:
         currency = pair.replace("JPY=X", "")
         try:
             info = client.get_stock_info(pair)
             if info is not None and info.get("price") is not None:
-                rates[currency] = float(info["price"])
+                rate = float(info["price"])
+                if math.isfinite(rate) and rate > 0:
+                    rates[currency] = rate
+                else:
+                    print(f"[fx_utils] Warning: FX rate for {pair} is invalid")
             else:
                 print(f"[fx_utils] Warning: FX rate for {pair} unavailable")
         except Exception as e:

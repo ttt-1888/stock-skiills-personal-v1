@@ -284,6 +284,27 @@ class TestSaveTrade:
         assert Path(second).exists()
         graph_write.assert_not_called()
 
+    def test_private_history_defaults_to_local_only(self, tmp_path):
+        with (
+            patch("src.data.history.save_trade._dual_write_graph") as trade_graph,
+            patch("src.data.history.save_misc._dual_write_graph") as misc_graph,
+            patch("src.data.history.save_health._dual_write_graph") as health_graph,
+        ):
+            save_trade(
+                "7203.T", "buy", 10, 100.0, "JPY", "2026-02-14",
+                base_dir=str(tmp_path),
+            )
+            save_stress_test(
+                "synthetic scenario", ["7203.T"], -0.1,
+                base_dir=str(tmp_path),
+            )
+            save_health(_sample_health_data(), base_dir=str(tmp_path))
+            save_forecast([], base_dir=str(tmp_path))
+
+        trade_graph.assert_not_called()
+        misc_graph.assert_not_called()
+        health_graph.assert_not_called()
+
 
 # ===================================================================
 # save_stress_test

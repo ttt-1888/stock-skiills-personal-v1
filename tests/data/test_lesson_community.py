@@ -129,6 +129,7 @@ class TestSaveNoteIntegration:
                 trigger="ファンダ良好でも損切り",
                 expected_action="-15%で撤退",
                 base_dir=str(tmp_path),
+                sync_external=True,
             )
 
         assert note.get("_lesson_community") == "売買ルール"

@@ -5,6 +5,8 @@ Contains serialization helpers, embedding builder, and dual-write helper.
 
 import json
 import logging
+import os
+import tempfile
 from pathlib import Path
 
 import numpy as np
@@ -62,6 +64,26 @@ def _sanitize(obj):
         if math.isnan(obj) or math.isinf(obj):
             return None
     return obj
+
+
+def _write_json_atomic(path: Path, payload: dict | list) -> None:
+    """Write JSON next to its destination and atomically replace the file."""
+    temp_path: str | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            delete=False,
+        ) as f:
+            temp_path = f.name
+            json.dump(_sanitize(payload), f, ensure_ascii=False, indent=2)
+        os.replace(temp_path, path)
+    except Exception:
+        if temp_path and os.path.exists(temp_path):
+            os.unlink(temp_path)
+        raise
 
 
 # ---------------------------------------------------------------------------

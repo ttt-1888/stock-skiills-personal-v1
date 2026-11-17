@@ -189,19 +189,14 @@ CONTEXT_RECENT_HOURS=168    # これ以内 → RECENT / これ超 → STALE
 
 → 7203.T のレポート実行時、RSI が 70 超なら「過去の lesson: 高値掴みリスクあり」と注意喚起する
 
-## Grokプロンプト文脈注入 (KIK-488)
+## Grokへ送信するデータ
 
-`src/data/grok_context.py` がNeo4jから投資家文脈（保有状態・前回レポート・テーゼ・懸念等）をコンパクトに抽出し、Grok APIプロンプトに注入する。
-
-- **注入先**: `researcher.py` → `grok_client.py` の5つのsearch関数（stock_deep, x_sentiment, industry, market, business）
-- **トークン予算**: 最大300トークン（~900文字）。行単位で切り詰め
-- **データ優先度**: 保有状態(高) > 前回レポート(高) > テーゼ/懸念(高) > スクリーニング出現(中) > リサーチ履歴(中) > ヘルスチェック(中) > テーマ(低)
-- **graceful degradation**: Neo4j未接続 → context="" → Grokは文脈なしで通常動作
+ローカルPF・売買履歴・投資メモの外部送信を防ぐため、リサーチ処理からGrokへの投資家文脈の注入は無効化している。Grok検索には調査対象の銘柄コード・企業名・業界/市場名などの問い合わせ情報のみが渡る。Yahoo Financeへの銘柄コード送信は引き続き発生する。
 
 ## graceful degradation
 
 - Neo4j 未接続時: スクリプトは「コンテキストなし」を出力 → 従来通りの動作
-- Neo4j 未接続時（Grok文脈）: `grok_context` が空文字を返す → Grokプロンプトに文脈なし（KIK-488）
+- Neo4j 未接続時（Grok文脈）: ローカルPF・メモの文脈はGrokへ送信しない
 - TEI 未起動時: ベクトル検索スキップ → シンボルベース検索のみ（KIK-420）
 - スクリプトエラー時: 無視して intent-routing のみで判断
 - シンボル検出できない場合 + TEI 未起動: 「コンテキストなし」→ 通常の intent-routing
@@ -217,7 +212,7 @@ CONTEXT_RECENT_HOURS=168    # これ以内 → RECENT / これ超 → STALE
 
 - 冒頭: `print_context()` でグラフコンテキストを自動取得・表示
 - 末尾: `print_suggestions()` でプロアクティブ提案を自動表示
-- 10秒タイムアウト（SIGALRM）
+- TEI HTTP通信とNeo4j接続のタイムアウトを使用（合計実行時間の上限ではない）
 - Neo4j 未接続・エラー時は graceful degradation（出力なし、クラッシュしない）
 
 ### CLI ラッパー（手動実行用）

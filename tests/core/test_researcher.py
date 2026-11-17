@@ -135,6 +135,33 @@ class TestResearchStock:
         assert result["x_sentiment"]["positive"] == ["Good earnings"]
         assert result["x_sentiment"]["sentiment_score"] == 0.3
 
+    def test_research_calls_do_not_attach_neo4j_context(self, monkeypatch):
+        """Investor context must not be added to third-party Grok requests."""
+        from src.data import grok_client
+
+        monkeypatch.setattr(grok_client, "is_available", lambda: True)
+        calls = {
+            "stock_deep": MagicMock(return_value={}),
+            "sentiment": MagicMock(return_value={}),
+            "industry": MagicMock(return_value={}),
+            "market": MagicMock(return_value={}),
+            "business": MagicMock(return_value={}),
+        }
+        monkeypatch.setattr(grok_client, "search_stock_deep", calls["stock_deep"])
+        monkeypatch.setattr(grok_client, "search_x_sentiment", calls["sentiment"])
+        monkeypatch.setattr(grok_client, "search_industry", calls["industry"])
+        monkeypatch.setattr(grok_client, "search_market", calls["market"])
+        monkeypatch.setattr(grok_client, "search_business", calls["business"])
+
+        mock_yc = _make_mock_yahoo_client(info=_sample_stock_info())
+        research_stock("7203.T", mock_yc)
+        research_industry("automotive")
+        research_market("global")
+        research_business("7203.T", mock_yc)
+
+        for call in calls.values():
+            assert "context" not in call.call_args.kwargs
+
     def test_stock_not_found(self, monkeypatch):
         """Returns empty fundamentals when yahoo_client returns None."""
         monkeypatch.delenv("XAI_API_KEY", raising=False)

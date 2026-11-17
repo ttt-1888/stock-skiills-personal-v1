@@ -145,6 +145,7 @@ def find_conflicts(
     existing_lessons: list[dict],
     similarity_threshold: float = 0.5,
     max_results: int = 5,
+    use_embeddings: bool = False,
 ) -> list[dict]:
     """Detect conflicts between a new lesson and existing lessons.
 
@@ -180,7 +181,7 @@ def find_conflicts(
         sim = trigger_sim * 0.6 + text_sim * 0.4 if trigger_sim > 0 else text_sim
 
         # TEI embedding fallback
-        if 0.2 < sim < similarity_threshold:
+        if use_embeddings and 0.2 < sim < similarity_threshold:
             emb_sim = embedding_similarity(new_text, ex_text)
             if emb_sim is not None:
                 sim = max(sim, emb_sim)

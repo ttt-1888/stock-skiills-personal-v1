@@ -1,11 +1,10 @@
 """Save health check results to history (KIK-578 split from save.py)."""
 
-import json
 from datetime import date, datetime
 
 from src.data.history._helpers import (
     _history_dir,
-    _sanitize,
+    _write_json_atomic,
     _dual_write_graph,
 )
 
@@ -13,6 +12,7 @@ from src.data.history._helpers import (
 def save_health(
     health_data: dict,
     base_dir: str = "data/history",
+    sync_external: bool = False,
 ) -> str:
     """Save health check results to JSON.
 
@@ -52,10 +52,11 @@ def save_health(
 
     d = _history_dir("health", base_dir)
     path = d / filename
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(_sanitize(payload), f, ensure_ascii=False, indent=2)
+    _write_json_atomic(path, payload)
 
-    # Neo4j dual-write (KIK-399/420) -- graceful degradation
+    if not sync_external:
+        return str(path.resolve())
+
     symbols = [p.get("symbol") for p in health_data.get("positions", []) if p.get("symbol")]
 
     def _graph_write(sem_summary, emb):

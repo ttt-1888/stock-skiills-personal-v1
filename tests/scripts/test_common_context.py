@@ -1,11 +1,10 @@
 """Tests for print_context() and print_suggestions() in scripts/common.py (KIK-465)."""
 
-import signal
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from scripts.common import print_context, print_suggestions, _CONTEXT_TIMEOUT
+from scripts.common import print_context, print_suggestions
 
 
 class TestPrintContext:
@@ -65,10 +64,6 @@ class TestPrintContext:
         mock_module.get_context.side_effect = RuntimeError("Neo4j down")
         with patch.dict("sys.modules", {"src.data.context.auto_context": mock_module}):
             assert print_context("test") is None
-
-    def test_timeout_value(self):
-        assert _CONTEXT_TIMEOUT == 10
-
 
 class TestPrintSuggestions:
     """Tests for print_suggestions()."""
